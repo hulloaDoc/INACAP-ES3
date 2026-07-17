@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Crear la instancia centralizada apuntando a tu servidor Mock
+// Se crea la instancia centralizada apuntando al servidor Mock
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:5173',
   timeout: 5000,
@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 // Se ejecuta "ANTES" de que la petición salga de react hacia el servidor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // token de LocalStorage
+    // Token de LocalStorage
     const token = localStorage.getItem('authToken');
     
     if (token) {
@@ -30,7 +30,7 @@ axiosInstance.interceptors.request.use(
 // 3. Interceptor de Respuestas
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Si la respuesta es exitosa, se devuelve la respuesta para que los componentes la procesen.
+    // Si la respuesta es exitosa, se devuelve la respuesta.
     return response;
   },
   (error) => {
