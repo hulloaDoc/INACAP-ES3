@@ -1,23 +1,21 @@
-import { useState } from 'react'
-import './App.css'
+import { Navigate, Route, Routes } from "react-router-dom"
+import LoginPage from './pages/LoginPage'
+import InventoryPage from './pages/InventoryPage'
+import ProtectdRoute from './components/ProtectdRoute'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id='container'>
-        <div className='header-title'>
-          <p>INACAP Market</p>
-          <p>Bienvenido, admin(Rol: Coordinador)</p>
-          <button className='sesion'>[Cerrar Sesión]</button>
-        </div>
-        <div className='nav-product'></div>
-        <div className='product-list'></div>
-        <div className='footer'></div>
-      </section>
-    </>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={
+        <ProtectdRoute>
+          <InventoryPage />
+        </ProtectdRoute>
+      } />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+    
   )
 }
 
-export default App
+export default App;
