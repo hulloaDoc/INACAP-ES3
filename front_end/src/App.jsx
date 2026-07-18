@@ -1,122 +1,151 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react';
+import api from './api/axiosInstance';
+import LoginForm from './components/LoginForm';
+import {
+  clearSession,
+  getSession,
+  saveSession,
+} from './utils/storage';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [session, setSession] = useState(() => getSession());
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    const validateStoredSession = async () => {
+      const storedSession = getSession();
+
+      if (!storedSession?.token) {
+        setCheckingSession(false);
+        return;
+      }
+
+      try {
+        const profileResponse = await api.get('/perfil');
+
+        const profile =
+          profileResponse.data?.user ||
+          profileResponse.data?.perfil ||
+          profileResponse.data ||
+          {};
+
+        const updatedSession = {
+          ...storedSession,
+          user: {
+            ...storedSession.user,
+            ...profile,
+          },
+        };
+
+        saveSession(updatedSession);
+        setSession(updatedSession);
+      } catch {
+        clearSession();
+        setSession(null);
+      } finally {
+        setCheckingSession(false);
+      }
+    };
+
+    validateStoredSession();
+  }, []);
+
+  const handleLogin = (newSession) => {
+    setSession(newSession);
+  };
+
+  const handleLogout = () => {
+    clearSession();
+    setSession(null);
+  };
+
+  if (checkingSession) {
+    return (
+      <main className="loading-page">
+        <div className="loading-spinner" />
+        <p>Verificando sesión...</p>
+      </main>
+    );
+  }
+
+  if (!session) {
+    return <LoginForm onLogin={handleLogin} />;
+  }
+
+  const user = session.user || {};
+
+  const displayName =
+    user.nombre ||
+    user.name ||
+    user.username ||
+    'Usuario';
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app-shell">
+      <header className="main-header">
+        <div className="main-header__brand">
+          <span>🏪</span>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <div>
+            <strong>INACAP Market</strong>
+            <small>Gestor de Inventario</small>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <div className="main-header__user">
+          <div className="user-avatar">
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Avatar del usuario"
+              />
+            ) : (
+              <span>
+                {displayName.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+
+          <div className="user-information">
+            <strong>Bienvenido, {displayName}</strong>
+
+            <span>
+              {user.rol ||
+                user.role ||
+                'Usuario del sistema'}
+            </span>
+
+            {user.email && <small>{user.email}</small>}
+          </div>
+
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      <main className="dashboard">
+        <section className="welcome-panel">
+          <span className="welcome-panel__icon">📦</span>
+
+          <div>
+            <h1>Administración de productos</h1>
+
+            <p>
+              La autenticación se realizó correctamente.
+              Luego agregaremos el listado, los filtros y el
+              CRUD de productos.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
