@@ -7,7 +7,7 @@ import {
   saveSession,
 } from './utils/storage';
 import './App.css';
-
+import InventoryDashboard from './components/InventoryDashboard';
 function App() {
   const [session, setSession] = useState(() => getSession());
   const [checkingSession, setCheckingSession] = useState(true);
@@ -129,21 +129,7 @@ function App() {
         </div>
       </header>
 
-      <main className="dashboard">
-        <section className="welcome-panel">
-          <span className="welcome-panel__icon">📦</span>
-
-          <div>
-            <h1>Administración de productos</h1>
-
-            <p>
-              La autenticación se realizó correctamente.
-              Luego agregaremos el listado, los filtros y el
-              CRUD de productos.
-            </p>
-          </div>
-        </section>
-      </main>
+      <InventoryDashboard />
     </div>
   );
 }
