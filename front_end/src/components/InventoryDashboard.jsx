@@ -16,8 +16,15 @@ import {
 import ErrorAlert from './ErrorAlert';
 import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
+import {
+  addAuditEntry,
+  clearAuditLog,
+  getAuditLog,
+} from '../utils/storage';
 
-function InventoryDashboard() {
+import AuditLog from './AuditLog';
+
+function InventoryDashboard({ username }) {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -40,6 +47,8 @@ function InventoryDashboard() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] =
     useState(null);
+  const [auditEntries, setAuditEntries] =
+  useState(() => getAuditLog());
 
   const loadInventory = useCallback(
     async (showLoading = true) => {
@@ -104,6 +113,30 @@ function InventoryDashboard() {
       setSuccessMessage('');
     }, 4000);
   };
+  const registerAudit = (action, product) => {
+  const updatedEntries = addAuditEntry({
+    username,
+    action,
+    productId: product?.id,
+    productName:
+      product?.nombre || 'Producto desconocido',
+  });
+
+  setAuditEntries(updatedEntries);
+};
+
+const handleClearAudit = () => {
+  const confirmed = window.confirm(
+    '¿Deseas borrar toda la bitácora de auditoría?',
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  clearAuditLog();
+  setAuditEntries([]);
+};
 
   const handleOpenCreate = () => {
     setEditingProduct(null);
@@ -128,42 +161,54 @@ function InventoryDashboard() {
     setEditingProduct(null);
   };
 
-  const handleSaveProduct = async (productData) => {
-    setSaving(true);
-    setErrorMessage('');
-    setSuccessMessage('');
+const handleSaveProduct = async (productData) => {
+  setSaving(true);
+  setErrorMessage('');
+  setSuccessMessage('');
 
-    try {
-      if (editingProduct) {
-        await updateProduct(
-          editingProduct.id,
-          productData,
-        );
+  try {
+    if (editingProduct) {
+      const updatedProduct = await updateProduct(
+        editingProduct.id,
+        productData,
+      );
 
-        showSuccessMessage(
-          `El producto "${productData.nombre}" fue actualizado correctamente.`,
-        );
-      } else {
+      registerAudit('editó', {
+        ...productData,
+        ...(updatedProduct || {}),
+        id: editingProduct.id,
+      });
+
+      showSuccessMessage(
+        `El producto "${productData.nombre}" fue actualizado correctamente.`,
+      );
+    } else {
+      const createdProduct =
         await createProduct(productData);
 
-        showSuccessMessage(
-          `El producto "${productData.nombre}" fue registrado correctamente.`,
-        );
-      }
+      registerAudit('registró', {
+        ...productData,
+        ...(createdProduct || {}),
+      });
 
-      await loadInventory(false);
-
-      setFormOpen(false);
-      setEditingProduct(null);
-    } catch (error) {
-      setErrorMessage(
-        error.userMessage ||
-          'No fue posible guardar el producto.',
+      showSuccessMessage(
+        `El producto "${productData.nombre}" fue registrado correctamente.`,
       );
-    } finally {
-      setSaving(false);
     }
-  };
+
+    await loadInventory(false);
+
+    setFormOpen(false);
+    setEditingProduct(null);
+  } catch (error) {
+    setErrorMessage(
+      error.userMessage ||
+        'No fue posible guardar el producto.',
+    );
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleDeleteProduct = async (product) => {
     const confirmed = window.confirm(
@@ -178,13 +223,16 @@ function InventoryDashboard() {
     setErrorMessage('');
     setSuccessMessage('');
 
-    try {
-      await deleteProduct(product.id);
-      await loadInventory(false);
+try {
+  await deleteProduct(product.id);
 
-      showSuccessMessage(
-        `El producto "${product.nombre}" fue eliminado correctamente.`,
-      );
+  registerAudit('eliminó', product);
+
+  await loadInventory(false);
+
+  showSuccessMessage(
+    `El producto "${product.nombre}" fue eliminado correctamente.`,
+  );
     } catch (error) {
       setErrorMessage(
         error.userMessage ||
@@ -313,7 +361,10 @@ function InventoryDashboard() {
           deletingId={deletingId}
         />
       )}
-
+<AuditLog
+  entries={auditEntries}
+  onClear={handleClearAudit}
+/>
       {formOpen && (
         <ProductForm
           product={editingProduct}

@@ -129,7 +129,8 @@ function App() {
         </div>
       </header>
 
-      <InventoryDashboard />
+      <InventoryDashboard 
+        username={user.username || displayName}/>
     </div>
   );
 }
