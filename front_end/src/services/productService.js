@@ -68,3 +68,20 @@ export async function deleteProduct(id) {
 
   return response.data;
 }
+export async function simulateBadRequest() {
+  const response = await api.post('/productos', {});
+
+  return response.data;
+}
+
+export async function simulateNotFound() {
+  const response = await api.get('/productos/999999');
+
+  return response.data;
+}
+
+export async function simulateServerError() {
+  const response = await api.get('/productos?error=500');
+
+  return response.data;
+}

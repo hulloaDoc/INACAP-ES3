@@ -10,10 +10,14 @@ import {
   deleteProduct,
   getCategories,
   getProducts,
+  simulateBadRequest,
+  simulateNotFound,
+  simulateServerError,
   updateProduct,
 } from '../services/productService';
 
 import ErrorAlert from './ErrorAlert';
+import ErrorTestPanel from './ErrorTestPanel';
 import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
 import {
@@ -37,6 +41,7 @@ function InventoryDashboard({ username }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [testingError, setTestingError] = useState('');
 
   const [errorMessage, setErrorMessage] =
     useState('');
@@ -136,6 +141,36 @@ const handleClearAudit = () => {
 
   clearAuditLog();
   setAuditEntries([]);
+};
+const handleErrorTest = async (status) => {
+  setTestingError(status);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    if (status === '400') {
+      await simulateBadRequest();
+    }
+
+    if (status === '404') {
+      await simulateNotFound();
+    }
+
+    if (status === '500') {
+      await simulateServerError();
+    }
+
+    setErrorMessage(
+      `La API no devolvió el error ${status} esperado.`,
+    );
+  } catch (error) {
+    setErrorMessage(
+      error.userMessage ||
+        `El error ${status} fue capturado correctamente.`,
+    );
+  } finally {
+    setTestingError('');
+  }
 };
 
   const handleOpenCreate = () => {
@@ -361,6 +396,12 @@ try {
           deletingId={deletingId}
         />
       )}
+<ErrorTestPanel
+  testingError={testingError}
+  onTest400={() => handleErrorTest('400')}
+  onTest404={() => handleErrorTest('404')}
+  onTest500={() => handleErrorTest('500')}
+/>
 <AuditLog
   entries={auditEntries}
   onClear={handleClearAudit}
