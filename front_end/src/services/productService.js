@@ -33,3 +33,38 @@ export async function getCategories() {
     'data',
   ]);
 }
+export async function getProductById(id) {
+  const response = await api.get(`/productos/${id}`);
+
+  return (
+    response.data?.producto ||
+    response.data?.product ||
+    response.data
+  );
+}
+
+export async function createProduct(product) {
+  const response = await api.post('/productos', product);
+
+  return (
+    response.data?.producto ||
+    response.data?.product ||
+    response.data
+  );
+}
+
+export async function updateProduct(id, product) {
+  const response = await api.put(`/productos/${id}`, product);
+
+  return (
+    response.data?.producto ||
+    response.data?.product ||
+    response.data
+  );
+}
+
+export async function deleteProduct(id) {
+  const response = await api.delete(`/productos/${id}`);
+
+  return response.data;
+}

@@ -1,25 +1,52 @@
-import { useEffect, useMemo, useState } from 'react';
 import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+
+import {
+  createProduct,
+  deleteProduct,
   getCategories,
   getProducts,
+  updateProduct,
 } from '../services/productService';
+
 import ErrorAlert from './ErrorAlert';
+import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
 
 function InventoryDashboard() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+
   const [selectedCategory, setSelectedCategory] =
     useState('Todas');
+
   const [stockFilter, setStockFilter] =
     useState('Todos');
+
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
   const [errorMessage, setErrorMessage] =
     useState('');
 
-  useEffect(() => {
-    const loadInventory = async () => {
-      setLoading(true);
+  const [successMessage, setSuccessMessage] =
+    useState('');
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingProduct, setEditingProduct] =
+    useState(null);
+
+  const loadInventory = useCallback(
+    async (showLoading = true) => {
+      if (showLoading) {
+        setLoading(true);
+      }
+
       setErrorMessage('');
 
       try {
@@ -37,12 +64,17 @@ function InventoryDashboard() {
             'No fue posible cargar el inventario.',
         );
       } finally {
-        setLoading(false);
+        if (showLoading) {
+          setLoading(false);
+        }
       }
-    };
+    },
+    [],
+  );
 
+  useEffect(() => {
     loadInventory();
-  }, []);
+  }, [loadInventory]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -65,6 +97,104 @@ function InventoryDashboard() {
     stockFilter,
   ]);
 
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+
+    window.setTimeout(() => {
+      setSuccessMessage('');
+    }, 4000);
+  };
+
+  const handleOpenCreate = () => {
+    setEditingProduct(null);
+    setErrorMessage('');
+    setSuccessMessage('');
+    setFormOpen(true);
+  };
+
+  const handleOpenEdit = (product) => {
+    setEditingProduct(product);
+    setErrorMessage('');
+    setSuccessMessage('');
+    setFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    if (saving) {
+      return;
+    }
+
+    setFormOpen(false);
+    setEditingProduct(null);
+  };
+
+  const handleSaveProduct = async (productData) => {
+    setSaving(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      if (editingProduct) {
+        await updateProduct(
+          editingProduct.id,
+          productData,
+        );
+
+        showSuccessMessage(
+          `El producto "${productData.nombre}" fue actualizado correctamente.`,
+        );
+      } else {
+        await createProduct(productData);
+
+        showSuccessMessage(
+          `El producto "${productData.nombre}" fue registrado correctamente.`,
+        );
+      }
+
+      await loadInventory(false);
+
+      setFormOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      setErrorMessage(
+        error.userMessage ||
+          'No fue posible guardar el producto.',
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteProduct = async (product) => {
+    const confirmed = window.confirm(
+      `¿Seguro que deseas eliminar "${product.nombre}"?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(product.id);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      await deleteProduct(product.id);
+      await loadInventory(false);
+
+      showSuccessMessage(
+        `El producto "${product.nombre}" fue eliminado correctamente.`,
+      );
+    } catch (error) {
+      setErrorMessage(
+        error.userMessage ||
+          'No fue posible eliminar el producto.',
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <main className="dashboard">
       <section className="dashboard-title">
@@ -77,7 +207,8 @@ function InventoryDashboard() {
             <h1>Administración de productos</h1>
 
             <p>
-              Consulta y filtra el inventario disponible.
+              Registra, consulta, modifica y elimina
+              productos del inventario.
             </p>
           </div>
         </div>
@@ -85,8 +216,7 @@ function InventoryDashboard() {
         <button
           type="button"
           className="primary-button"
-          disabled
-          title="Se habilitará en el próximo paso"
+          onClick={handleOpenCreate}
         >
           + Agregar producto
         </button>
@@ -96,6 +226,16 @@ function InventoryDashboard() {
         message={errorMessage}
         onClose={() => setErrorMessage('')}
       />
+
+      {successMessage && (
+        <div
+          className="success-alert"
+          role="status"
+        >
+          <span>✅</span>
+          <span>{successMessage}</span>
+        </div>
+      )}
 
       <section className="inventory-toolbar">
         <div className="filter-group">
@@ -137,10 +277,14 @@ function InventoryDashboard() {
               setStockFilter(event.target.value)
             }
           >
-            <option value="Todos">Todos</option>
+            <option value="Todos">
+              Todos
+            </option>
+
             <option value="En stock">
               En stock
             </option>
+
             <option value="Sin stock">
               Sin stock
             </option>
@@ -149,6 +293,7 @@ function InventoryDashboard() {
 
         <div className="inventory-counter">
           <span>Productos visibles</span>
+
           <strong>
             {filteredProducts.length}
           </strong>
@@ -163,6 +308,19 @@ function InventoryDashboard() {
       ) : (
         <ProductTable
           products={filteredProducts}
+          onEdit={handleOpenEdit}
+          onDelete={handleDeleteProduct}
+          deletingId={deletingId}
+        />
+      )}
+
+      {formOpen && (
+        <ProductForm
+          product={editingProduct}
+          categories={categories}
+          onSubmit={handleSaveProduct}
+          onCancel={handleCloseForm}
+          saving={saving}
         />
       )}
     </main>

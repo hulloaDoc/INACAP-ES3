@@ -12,12 +12,18 @@ function formatPrice(value) {
   }).format(numericValue);
 }
 
-function ProductTable({ products }) {
+function ProductTable({
+  products,
+  onEdit,
+  onDelete,
+  deletingId,
+}) {
   if (products.length === 0) {
     return (
       <section className="empty-state">
         <span>📭</span>
         <h2>No hay productos para mostrar</h2>
+
         <p>
           No existen productos que coincidan con los filtros seleccionados.
         </p>
@@ -44,6 +50,7 @@ function ProductTable({ products }) {
           <tbody>
             {products.map((product) => {
               const stock = Number(product.stock) || 0;
+              const isDeleting = deletingId === product.id;
 
               return (
                 <tr key={product.id}>
@@ -67,9 +74,7 @@ function ProductTable({ products }) {
                           : 'stock-badge stock-badge--empty'
                       }
                     >
-                      {stock > 0
-                        ? 'En stock'
-                        : 'Sin stock'}
+                      {stock > 0 ? 'En stock' : 'Sin stock'}
                     </span>
                   </td>
 
@@ -78,8 +83,8 @@ function ProductTable({ products }) {
                       <button
                         type="button"
                         className="edit-button"
-                        disabled
-                        title="Se habilitará en el próximo paso"
+                        onClick={() => onEdit(product)}
+                        disabled={isDeleting}
                       >
                         Editar
                       </button>
@@ -87,10 +92,12 @@ function ProductTable({ products }) {
                       <button
                         type="button"
                         className="delete-button"
-                        disabled
-                        title="Se habilitará en el próximo paso"
+                        onClick={() => onDelete(product)}
+                        disabled={isDeleting}
                       >
-                        Eliminar
+                        {isDeleting
+                          ? 'Eliminando...'
+                          : 'Eliminar'}
                       </button>
                     </div>
                   </td>
