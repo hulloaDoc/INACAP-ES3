@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
   },
 });
 // interceptor de solicitudes: adjuntar el token del local en cada peticion 
-axionsInstance.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     // hacemos el log en la consola para mostrar evidencia 
-    console.error('API error interceptado', error.responde || error);
+    console.error('API error interceptado', error.response || error);
 
     if (error.response) {
       const { status, data } = error.response;
