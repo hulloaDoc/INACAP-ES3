@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import LoginPage from './pages/LoginPage'
 import InventoryPage from './pages/InventoryPage'
-import ProtectdRoute from './components/ProtectdRoute'
+import ProtectdRoute from './components/ProtectedRoute'
 
 function App() {
   return (
