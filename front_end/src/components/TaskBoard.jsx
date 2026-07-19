@@ -3,7 +3,7 @@ import axiosInstance from '../api/axiosInstance';
 import { getPreferences, savePreferences } from '../utils/storage';
 import TaskFormModal from './TaskFormModal';
 
-const TaskBoard = () => {
+const TaskBoard = ({ theme }) => {
 
     // 1. estados para almacenar datos del servidor
     const [tasks, setTasks] = useState([]);
@@ -153,11 +153,25 @@ const TaskBoard = () => {
         savePreferences({ theme: localStorage.getItem('theme') || 'light', priorityFilter: valor });
     };
 
+    // Agrupamos las tareas filtradas para cada columna
+    const tareasPendientes = filteredTasks.filter(t => !t.completada && !enProcesoIds.includes(t.id));
+    const tareasEnProceso = filteredTasks.filter(t => !t.completada && enProcesoIds.includes(t.id));
+    const tareasCompletadas = filteredTasks.filter(t => t.completada);
+
     return (
         <div className='tablero-contenedor'>
             {/* Barra de Filtros y Controles */}
             <div className='tablero-controles'>
                 <div className='grupo-filtros'>
+                    <div className='filtro-item'>
+                        <label>Asignado:</label>
+                        <select value={assigneerFilter} onChange={(e) => setAssigneerFilter(e.target.value)}>
+                            <option value="Todos">Todos</option>
+                            {users.map(u => (
+                                <option key={u} value={u}>{u}</option>
+                            ))}
+                        </select>
+                    </div>
                     <div className='filtro-item'>
                         <label>Prioridad:</label>
                         <select value={priorityFilter} onChange={(e) => handlePriorityFilterChange(e.target.value)}>
@@ -165,15 +179,6 @@ const TaskBoard = () => {
                             <option value='Alta'>Alta</option>
                             <option value='Media'>Media</option>
                             <option value='Baja'>Baja</option>
-                        </select>
-                    </div>
-                    <div className='filtro-item'>
-                        <label>Responsable:</label>
-                        <select value={assigneerFilter} onChange={(e) => setAssigneerFilter(e.target.value)}>
-                            <option value="Todos">Todos</option>
-                            {users.map(u => (
-                                <option key={u} value={u}>{u}</option>
-                            ))}
                         </select>
                     </div>
                 </div>
@@ -187,19 +192,20 @@ const TaskBoard = () => {
 
                 {/* 1. Columna PENDIENTE */}
                 <div className="columna">
-                    <h3 className="columna-titulo">PENDIENTE</h3>
+                    <h3 className="columna-titulo">Pendiente ({tareasPendientes.length})</h3>
                     <div className="columna-contenido">
-                        {filteredTasks
-                            .filter(t => !t.completada && !enProcesoIds.includes(t.id))
-                            .map(t => (
+                        {tareasPendientes.length === 0 ? (
+                            <p className="columna-vacia">Vacío</p>
+                        ) : (
+                            tareasPendientes.map(t => (
                                 <div key={t.id} className="tarjeta-tarea">
                                     <h4>{t.titulo}</h4>
                                     <p>{t.descripcion}</p>
                                     <div className="tarjeta-info">
+                                        <span className="responsable-nombre">Encargado: {t.responsable}</span>
                                         <span className={`prioridad-${t.prioridad.toLowerCase()}`}>
                                             {t.prioridad}
                                         </span>
-                                        <span className="responsable-nombre">{t.responsable}</span>
                                     </div>
                                     <div className="tarjeta-acciones">
                                         <button onClick={() => handleMoveTask(t, 'En Proceso')} className="btn-iniciar">
@@ -209,34 +215,35 @@ const TaskBoard = () => {
                                             Editar
                                         </button>
                                         <button onClick={() => handleDeleteTask(t.id)} className="btn-eliminar">
-                                            Eliminar
+                                            X
                                         </button>
                                     </div>
                                 </div>
                             ))
-                        }
+                        )}
                     </div>
                 </div>
 
                 {/* 2. Columna EN PROCESO */}
                 <div className="columna">
-                    <h3 className="columna-titulo">EN PROCESO</h3>
+                    <h3 className="columna-titulo">En Proceso ({tareasEnProceso.length})</h3>
                     <div className="columna-contenido">
-                        {filteredTasks
-                            .filter(t => !t.completada && enProcesoIds.includes(t.id))
-                            .map(t => (
+                        {tareasEnProceso.length === 0 ? (
+                            <p className="columna-vacia">Vacío</p>
+                        ) : (
+                            tareasEnProceso.map(t => (
                                 <div key={t.id} className="tarjeta-tarea">
                                     <h4>{t.titulo}</h4>
                                     <p>{t.descripcion}</p>
                                     <div className="tarjeta-info">
+                                        <span className="responsable-nombre">Encargado: {t.responsable}</span>
                                         <span className={`prioridad-${t.prioridad.toLowerCase()}`}>
                                             {t.prioridad}
                                         </span>
-                                        <span className="responsable-nombre">{t.responsable}</span>
                                     </div>
                                     <div className="tarjeta-acciones">
                                         <button onClick={() => handleMoveTask(t, 'Completada')} className="btn-completar">
-                                            Completar
+                                            Terminar
                                         </button>
                                         <button onClick={() => handleMoveTask(t, 'Pendiente')} className="btn-regresar">
                                             Regresar
@@ -245,28 +252,29 @@ const TaskBoard = () => {
                                             Editar
                                         </button>
                                         <button onClick={() => handleDeleteTask(t.id)} className="btn-eliminar">
-                                            Eliminar
+                                            X
                                         </button>
                                     </div>
                                 </div>
                             ))
-                        }
+                        )}
                     </div>
                 </div>
 
                 {/* 3. Columna COMPLETADA */}
                 <div className="columna">
-                    <h3 className="columna-titulo">COMPLETADA</h3>
+                    <h3 className="columna-titulo">Completada ({tareasCompletadas.length})</h3>
                     <div className="columna-contenido">
-                        {filteredTasks
-                            .filter(t => t.completada)
-                            .map(t => (
+                        {tareasCompletadas.length === 0 ? (
+                            <p className="columna-vacia">Vacío</p>
+                        ) : (
+                            tareasCompletadas.map(t => (
                                 <div key={t.id} className="tarjeta-tarea tarjeta-completada">
                                     <h4>{t.titulo}</h4>
                                     <p>{t.descripcion}</p>
                                     <div className="tarjeta-info">
+                                        <span className="responsable-nombre">Encargado: {t.responsable}</span>
                                         <span className="prioridad-completada">Terminado</span>
-                                        <span className="responsable-nombre">{t.responsable}</span>
                                     </div>
                                     <div className="tarjeta-acciones">
                                         <button onClick={() => handleMoveTask(t, 'En Proceso')} className="btn-regresar">
@@ -276,16 +284,26 @@ const TaskBoard = () => {
                                             Editar
                                         </button>
                                         <button onClick={() => handleDeleteTask(t.id)} className="btn-eliminar">
-                                            Eliminar
+                                            X
                                         </button>
                                     </div>
                                 </div>
                             ))
-                        }
+                        )}
                     </div>
                 </div>
 
             </div>
+
+            {/* Preferencias de Configuración (LocalStorage) */}
+            <div className="tablero-preferencias">
+                <h4>📋 Preferencias de Configuración (LocalStorage)</h4>
+                <p>
+                    - Tema Activo: <strong>{theme === 'dark' ? 'Oscuro' : 'Claro'}</strong> | Filtro Prioridad: <strong>{priorityFilter}</strong> | Filtro Responsable: <strong>{assigneerFilter}</strong>
+                </p>
+            </div>
+
+            {/* Modal para Crear y Editar tareas */}
             {showModal && (
                 <TaskFormModal
                     task={editingTask}
