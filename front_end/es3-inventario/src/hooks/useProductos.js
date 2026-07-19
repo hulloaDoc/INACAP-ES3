@@ -61,8 +61,8 @@ export default function useProductos() {
   // Actualiza un producto existente, se busca el producto por id 
   // dentro del arreglo y se reemplaza con la data que devuelve la API
   const actualizar = useCallback(async (id, producto) => {
-    const {data} = await axiosClient.post(`/productos/${id}`, producto);
-    setProductos((prev) => prev.filter((p) => (p.id === id ? data : p)));
+    const {data} = await axiosClient.put(`/productos/${id}`, producto);
+    setProductos((prev) => prev.map((p) => (p.id === id ? data : p)));
     return data;
   }, []);
 
@@ -72,10 +72,20 @@ export default function useProductos() {
     await axiosClient.delete(`/productos/${id}`);
     setProductos((prev) => prev.filter((p) => p.id !== id));
   }, []);
+
+  // Busca un producto por ID directamente contra el backend (GET /productos/:id).
+  // Se usa para la búsqueda por ID desde la UI: si el producto no existe,
+  // el backend responde 404 y esta función lo propaga (no lo atrapa),
+  // para que quien la llame decida cómo mostrar el error.
+  const buscarPorId = useCallback(async (id) => {
+    const { data } = await axiosClient.get(`/productos/${id}`);
+    return data;
+  }, []);
+
   // Retorna todos lo que un componente podria necesitar:
   // datos, estados de carga/error y las funciones para
   // modificar los productos
-  return {productos, categorias, loading, error, setError, recargar, crear, actualizar, eliminar};
+  return {productos, categorias, loading, error, setError, recargar, crear, actualizar, eliminar, buscarPorId};
 
 
 }

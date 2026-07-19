@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ErrorAlert from './ErrorAlert';
 import './ProductForm.css';
 
 // Objeto "plantilla" para cuando el formulario está vacio
@@ -6,7 +7,7 @@ import './ProductForm.css';
 const VACIO = { nombre: '', precio: '', stock: '', categoria: '' };
 
 // Formulario para crear o editar un producto
-export default function ProductForm({ producto, categorias, onGuardar, onCancelar }) {
+export default function ProductForm({ producto, categorias, error, onGuardar, onCancelar }) {
     // Inicia el estado del formulario segun si es esdición o creación
     // La función en useState para que este cálculo se haga
     // solo una vez, no cafa render
@@ -60,6 +61,11 @@ export default function ProductForm({ producto, categorias, onGuardar, onCancela
       <form className="product-form" onSubmit={handleSubmit}>
         {/* El titulo cambia segun si estamos editando o creando */}
         <h2>{producto ? 'Editar Producto' : 'Agregar Producto'}</h2>
+
+        {/* Error devuelto por el backend (ej: 400 por validación),
+            se muestra dentro del propio modal para que sea visible
+            sin tener que cerrar el formulario */}
+        {error && <ErrorAlert status={error.status} mensaje={error.mensaje} onClose={null} />}
 
         <label>
           Nombre
