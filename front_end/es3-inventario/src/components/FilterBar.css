@@ -1,0 +1,47 @@
+/* Barra con los filtros de categoría/stock y el botón de agregar producto */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background-color: #fff;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Contenedor de los selects de filtro (categoría y stock) */
+.filter-bar__filters {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-bar__filters label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.filter-bar__filters select {
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+/* Botón "+ Agregar Producto", destacado en rojo */
+.filter-bar__add {
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-bar__add:hover {
+  background-color: #b91c1c;
+}

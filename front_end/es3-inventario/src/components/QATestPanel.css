@@ -1,0 +1,44 @@
+/* Panel de pruebas QA: lo distinguimos del resto de la app con
+   un fondo amarillo y borde punteado, para que se note que es
+   una sección de "solo pruebas" y no parte del sistema real */
+.qa-panel {
+  background-color: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 8px;
+  margin: 1.5rem;
+  padding: 1rem 1.5rem;
+}
+
+.qa-panel h3 {
+  color: #92400e;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.qa-panel p {
+  font-size: 0.8rem;
+  color: #92400e;
+  margin-bottom: 0.75rem;
+}
+
+/* Fila con los tres botones (400 / 404 / 500) */
+.qa-panel__buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.qa-panel__buttons button {
+  background-color: #d97706;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.qa-panel__buttons button:hover {
+  background-color: #b45309;
+}

@@ -1,0 +1,43 @@
+/* Barra superior de la app (logo + datos del usuario logeado) */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1f2937;
+  color: #fff;
+  padding: 0.9rem 1.5rem;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Logo/nombre del sistema, al lado izquierdo */
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Contenedor con el saludo al usuario y el botón de cerrar sesión */
+.app-header__session {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Botón de "Cerrar Sesión", con borde y sin fondo por defecto */
+.app-header__logout {
+  background-color: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Al pasar el mouse, invertimos los colores para dar feedback visual */
+.app-header__logout:hover {
+  background-color: #fff;
+  color: #1f2937;
+}

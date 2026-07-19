@@ -1,0 +1,34 @@
+/* Sección con el historial de auditoría (lista de acciones) */
+.audit-log {
+  background-color: #fff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.audit-log h3 {
+  font-size: 0.95rem;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+/* Lista de entradas del historial, con scroll si son muchas
+   (max-height + overflow-y: auto) */
+.audit-log ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.audit-log li {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+/* Mensaje que aparece cuando todavía no hay ninguna acción registrada */
+.audit-log__empty {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}

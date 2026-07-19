@@ -1,0 +1,41 @@
+/* Caja de alerta roja para mostrar errores */
+.error-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background-color: #fde8e8;
+  border: 1px solid #e53950;
+  color: #8a1224;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+/* Ícono de advertencia (⚠) al lado izquierdo */
+.error-alert__icon {
+  font-size: 1.1rem;
+}
+
+/* Contenedor del texto: el código de status (si hay) + el mensaje */
+.error-alert__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Texto tipo "Error 404", en mayúsculas para que resalte */
+.error-alert__status {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Botón "×" para cerrar la alerta manualmente */
+.error-alert__close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
