@@ -1,157 +1,402 @@
-# Evaluación Sumativa 3 (ES3) — Programación Front-End INACAP
+# Task Tracker - Evaluación ES3
+## Ingeniería en Informática - INACAP
 
-*   **Asignatura:** Programación Front-End
-*   **Código:** TI3V31
-*   **Unidad:** 3 (Framework en JavaScript: ReactJS)
-*   **Porcentaje de Evaluación:** 35% de la Nota de Presentación (NP)
-*   **Instrumento:** Escala de apreciación en rúbrica XLSX
-*   **Puntaje Total:** 100 Puntos (Aprobación mínima con 60 puntos para nota 4.0)
+# Autor
+
+Luis Benjamín Henríquez Cortés
+
+Ingeniería en Informática - Vespertino
+
+INACAP
+
+Evaluación ES3
+
+## Descripción
+
+Task Tracker es una aplicación web desarrollada con React y Vite para la gestión de tareas. El proyecto implementa un CRUD completo (Crear, Leer, Actualizar y Eliminar) utilizando un Mock Server con JSON Server como API REST simulada.
+
+La aplicación incorpora autenticación simulada, manejo de estado con React Hooks, comunicación HTTP mediante Axios y almacenamiento local utilizando LocalStorage para mantener la sesión del usuario.
 
 ---
 
-## 1. Contexto de la Problemática y Opciones
+# Tecnologías utilizadas
 
-El estudiante deberá seleccionar **una** de las siguientes tres problemáticas y desarrollar una aplicación web de una sola página (SPA) en React que solucione las necesidades del negocio. Todas las aplicaciones deben consumir una API mock centralizada mediante peticiones HTTP asíncronas seguras y manejar almacenamiento persistente en el navegador (LocalStorage).
-
-### 👥 Módulo Común de Autenticación (Obligatorio para las 3 opciones)
-Toda aplicación debe contar con una pantalla o formulario de inicio de sesión (`login`) que envíe credenciales (`username` y `password`) a la API. Al autenticarse correctamente, el sistema guardará el token de seguridad en LocalStorage y consumirá el perfil del usuario para mostrar una barra superior (Header) con la bienvenida personalizada, rol del usuario, correo y su avatar.
+- React
+- Vite
+- JavaScript (ES6+)
+- Axios
+- JSON Server
+- CSS3
+- HTML5
 
 ---
 
-### 📦 Opción A: Gestor de Inventario de Tienda (Store Inventory Manager)
-*   **Propósito:** Administrar el stock físico de productos de una tienda minorista.
-*   **API Endpoints:**
-    *   `GET /api/productos`: Lista de todos los productos.
-    *   `GET /api/productos/:id`: Detalle de un producto individual.
-    *   `POST /api/productos`: Registrar un producto (requiere: `nombre`, `precio`, `stock`, `categoria`).
-    *   `PUT /api/productos/:id`: Editar los datos de un producto.
-    *   `DELETE /api/productos/:id`: Eliminar un producto del stock.
-    *   `GET /api/categorias`: Retorna las categorías disponibles (`['Abarrotes', 'Lácteos', 'Limpieza', 'Electrónica', 'Hogar']`).
-*   **Integración LocalStorage:** Crear una bitácora o historial de transacciones realizadas en la sesión (ej: "Usuario admin editó producto ID 2 a las 15:40") para auditoría del administrador.
-*   **Wireframe ASCII del Diseño Esperado:**
+## Estructura del proyecto
+
 ```
-+------------------------------------------------------------+
-| [INACAP]   Inventario de Tienda   | Bienvenido, admin [Out]|
-+------------------------------------------------------------+
-| Categoria: [Abarrotes v]  Filtrar por stock: [En stock v] |
-+------------------------------------------------------------+
-| + Agregar Producto                                         |
-| +--------------------------------------------------------+ |
-| | ID | Nombre        | Precio | Stock | Cat.    | Accion | |
-| |----+---------------+--------+-------+---------+--------| |
-| | 1  | Arroz 1kg     | $1250  | 45    | Abarrot.| [E] [X]| |
-| | 2  | Leche 1L      | $950   | 0     | Lácteos | [E] [X]| |
-| +--------------------------------------------------------+ |
-| BITÁCORA DE AUDITORÍA (LocalStorage)                       |
-| - [14:30] admin editó el producto ID 2.                   |
-| - [14:28] admin eliminó el producto ID 5.                 |
-+------------------------------------------------------------+
-```
+INACAP-ES3/
+│
+├── front_end/
+│   ├── node_modules/
+│   ├── public/
+│   │
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── axiosInstance.js
+│   │   │
+│   │   ├── assets/
+│   │   │
+│   │   ├── components/
+│   │   │   ├── ErrorAlert.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── TaskCard.jsx
+│   │   │   ├── TaskForm.jsx
+│   │   │   └── TaskStats.jsx
+│   │   │
+│   │   ├── pages/
+│   │   │   └── Dashboard.jsx
+│   │   │
+│   │   ├── services/
+│   │   │   ├── authService.js
+│   │   │   └── taskService.js
+│   │   │
+│   │   ├── utils/
+│   │   │   └── localStorage.js
+│   │   │
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   │
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   └── vite.config.js
+│
+├── mock-server/
+│   ├── db.json
+│   ├── package.json
+│   ├── package-lock.json
+│   └── node_modules/
+│
+└── README.md
+
 
 ---
 
-### 📋 Opción B: Task Tracker de Equipo (Team Task Tracker)
-*   **Propósito:** Controlar el avance de tareas técnicas asignadas a miembros de un equipo de TI.
-*   **API Endpoints:**
-    *   `GET /api/tareas`: Lista de todas las tareas.
-    *   `GET /api/tareas/:id`: Obtener una tarea en particular.
-    *   `POST /api/tareas`: Registrar una tarea (requiere: `titulo`, `descripcion`, `prioridad`, `responsable`, `completada`).
-    *   `PUT /api/tareas/:id`: Editar los datos de una tarea.
-    *   `DELETE /api/tareas/:id`: Eliminar una tarea del registro.
-    *   `GET /api/usuarios`: Retorna el equipo disponible (`['Juan Pérez', 'Ana Gómez', 'Luis Rojas', 'Sofía Díaz']`).
-*   **Integración LocalStorage:** Guardar las preferencias visuales del usuario (ej: filtro de tareas por prioridad activa o tema oscuro/claro) para que persistan al recargar la web.
-*   **Wireframe ASCII del Diseño Esperado:**
-```
-+------------------------------------------------------------+
-| [INACAP]   Task Tracker de Equipo | Bienvenido, admin [Out]|
-+------------------------------------------------------------+
-| Asignado: [Sofía Díaz v]   Filtro Prioridad: [Todas v]     |
-+------------------------------------------------------------+
-| + Nueva Tarea                                              |
-| +--------------------+ +--------------------+ +----------+ |
-| | PENDIENTE (1)      | | EN PROCESO (2)     | | COMPL.   | |
-| |--------------------| |--------------------| |----------| |
-| | * Config. DNS      | | * Mockup Login     | |          | |
-| |   [Alta] [Sofía]   | |   [Media] [Ana]    | |          | |
-| |   [Iniciar] [X]    | |   [Completar] [X]  | |          | |
-| +--------------------+ +--------------------+ +----------+ |
-| PREFERENCIAS VISUALES (LocalStorage): [X] Modo Oscuro      |
-+------------------------------------------------------------+
-```
+# Funcionalidades implementadas
+
+## Autenticación
+
+- Inicio de sesión simulado.
+- Validación local de credenciales.
+- Persistencia de sesión mediante LocalStorage.
+- Cierre de sesión.
 
 ---
 
-### 📅 Opción C: Agenda de Eventos y Reuniones (Event & Meeting Planner)
-*   **Propósito:** Agendar el uso de salas académicas y laboratorios dentro de la sede INACAP.
-*   **API Endpoints:**
-    *   `GET /api/eventos`: Lista de eventos agendados.
-    *   `GET /api/eventos/:id`: Obtener datos de un evento particular.
-    *   `POST /api/eventos`: Reservar sala (requiere: `nombre_evento`, `fecha`, `hora`, `lugar`, `descripcion`).
-    *   `PUT /api/eventos/:id`: Editar reserva de evento.
-    *   `DELETE /api/eventos/:id`: Cancelar la reserva de evento.
-    *   `GET /api/salas`: Salas de la sede (`['Sala de Computación A', 'Auditorio Central', 'Sala de Reuniones 102', 'Laboratorio Químico']`).
-*   **Integración LocalStorage:** Almacenar el historial de búsquedas del usuario de salas o eventos para permitir búsquedas rápidas locales.
-*   **Wireframe ASCII del Diseño Esperado:**
+## Gestión de tareas
+
+- Crear tareas.
+- Listar tareas.
+- Editar tareas.
+- Eliminar tareas.
+- Actualización automática de la interfaz sin recargar la página.
+
+---
+
+## Estadísticas
+
+La aplicación muestra indicadores en tiempo real de:
+
+- Total de tareas.
+- Tareas pendientes.
+- Tareas completadas.
+
+---
+
+## Buscador
+
+Permite filtrar tareas por:
+
+- Título.
+- Descripción.
+
+La búsqueda se realiza en tiempo real.
+
+---
+
+## Validaciones
+
+- Campos obligatorios.
+- Mensajes de éxito.
+- Mensajes de error.
+- Confirmación antes de eliminar una tarea.
+
+---
+
+# API utilizada
+
+El proyecto utiliza JSON Server como API REST simulada.
+
+Base URL
+
 ```
-+------------------------------------------------------------+
-| [INACAP]   Agenda de Eventos      | Bienvenido, admin [Out]|
-+------------------------------------------------------------+
-| Buscar: [Taller React...]  Sala: [Todas v]                 |
-+------------------------------------------------------------+
-| + Agendar Evento                                           |
-| +--------------------------------------------------------+ |
-| | [2026-07-22 | 14:15] Sala de Computación A              | |
-| | Taller Práctico React + Axios                          | |
-| | Desc: Demostración consumo REST y logs en consola.      | |
-| | [Editar] [Cancelar Evento]                             | |
-| +--------------------------------------------------------+ |
-| ÚLTIMAS BÚSQUEDAS (LocalStorage)                           |
-| - "Taller React" (2026-07-11)                             |
-| - "Coordinación" (2026-07-10)                            |
-+------------------------------------------------------------+
+http://localhost:3000
 ```
 
----
+Endpoints utilizados
 
-## 2. Requerimientos Técnicos Obligatorios
-
-1.  **Framework React + Vite:** El proyecto debe ser inicializado con Vite y estructurado con componentes reutilizables (mínimo: login, barra de navegación, formulario de CRUD, listado dinámico, tarjeta individual, alertas de error).
-2.  **Consumo REST con Axios:**
-    *   Crear una instancia centralizada de Axios en `src/api/axiosInstance.js` utilizando `axios.create()`.
-    *   Configurar los headers globales para enviar la cabecera `Authorization` de autenticación HTTP Basic de forma dinámica.
-3.  **Persistencia LocalStorage:**
-    *   Guardar la sesión (token/perfil) al iniciar sesión de forma correcta.
-    *   Implementar las operaciones CRUD en LocalStorage descritas en cada opción, validando la integridad estructural (ej: control de errores al usar `JSON.parse()`) y previniendo vulnerabilidades XSS mediante desinfección de textos o renderizado nativo seguro (evitar `dangerouslySetInnerHTML`).
-4.  **Manejo de Errores y Evidencia de Logs (15%):**
-    *   La API mock responderá con códigos HTTP inválidos (400, 401, 404, 500) según las solicitudes enviadas o la presencia de la query `?error=500`.
-    *   El estudiante debe atrapar estos códigos en su flujo de Axios y notificar al usuario con un componente de alerta visual dinámico en la UI.
-    *   **Evidencia Requerida:** Crear una carpeta en la raíz del proyecto llamada `evidencia_pruebas/` y guardar obligatoriamente las siguientes capturas de pantalla de la consola del navegador y la interfaz del usuario:
-        *   `error_401_consola.png` / `error_401_interfaz.png`: Captura del error 401 Unauthorized (petición sin auth o credenciales incorrectas en login) y la alerta en pantalla.
-        *   `error_500_consola.png` / `error_500_interfaz.png`: Captura del error 500 Internal Server Error (simulado con la query `?error=500` o cabecera `x-simulate-error: 500`) y el componente `<ErrorAlert />` en la UI sin congelar la app.
-        *   `error_404_consola.png` / `error_404_interfaz.png`: Captura del error 404 Not Found (petición a ID inexistente) y la alerta en pantalla.
-        *   Incluir un archivo `evidencia_pruebas/README.md` breve en el que insertes estas imágenes y expliques la lógica implementada en tus bloques `catch` para controlarlas.
-5.  **Flujo Git y Control de Versiones (15%):**
-    *   Trabajar de manera incremental en su propio fork de `evaluacion_sumativa_3`.
-    *   Crear ramas independientes `feature/...` para el desarrollo.
-    *   Crear y proponer un Pull Request final hacia la rama de entrega `release/es3_nombre_apellido` a partir de su rama base de ES2.
-    *   Nomenclatura semántica obligatoria de commits (`feat:`, `fix:`, `docs:`, `refactor:`).
+| Método | Endpoint | Descripción |
+|---------|----------|-------------|
+| GET | /tasks | Obtener todas las tareas |
+| POST | /tasks | Crear una tarea |
+| PUT | /tasks/:id | Actualizar una tarea |
+| DELETE | /tasks/:id | Eliminar una tarea |
 
 ---
 
-## 3. Uso de Inteligencia Artificial (IA)
+# Instalación
 
-De acuerdo a los criterios 3.1.1 y 3.1.2 de INACAP, el estudiante debe incorporar herramientas de IA generativa (ChatGPT, Github Copilot, Gemini) en su flujo de desarrollo y documentarlo en su informe final o en la parte inferior del archivo `README.md` del repositorio entregado:
-1.  **Prompts Utilizados:** Copiar textualmente las instrucciones dadas a la IA para resolver modularización, validación segura de inputs o el setup de Axios.
-2.  **Análisis Crítico:** Explicar el motivo técnico de aceptar o refactorizar la sugerencia provista por la IA, demostrando criterio y comprensión del código.
+## 1. Clonar el repositorio
 
----
-
-## 4. Instrucciones para levantar el Servidor de Mocks
-
-El servidor mock de la API no cuenta con dependencias npm externas para facilitar su uso. Se ejecuta directamente con NodeJS:
 ```bash
-# 1. Posicionarse en la carpeta where se encuentra el archivo mock_api_server.js
-# 2. Levantar el servicio
-node mock_api_server.js
+git clone <URL_DEL_REPOSITORIO>
 ```
-El servidor comenzará a escuchar peticiones en la dirección `http://localhost:4000`.
+
+---
+
+## 2. Instalar dependencias del Front-End
+
+```bash
+cd front_end
+
+npm install
+```
+
+---
+
+## 3. Instalar dependencias del Mock Server
+
+```bash
+cd mock-server
+
+npm install
+```
+
+---
+
+# Ejecución del proyecto
+
+El proyecto requiere dos terminales.
+
+## Terminal 1
+
+Iniciar el Mock Server.
+
+```bash
+cd front_end/mock-server
+
+npm start
+```
+
+Servidor:
+
+```
+http://localhost:3000
+```
+
+---
+
+## Terminal 2
+
+Iniciar React.
+
+```bash
+cd front_end
+
+npm run dev
+```
+
+Aplicación:
+
+```
+http://localhost:5173
+```
+
+---
+
+# Credenciales de acceso
+
+La autenticación es simulada.
+
+Correo
+
+```
+admin@inacap.cl
+```
+
+Contraseña
+
+```
+123456
+```
+
+La sesión permanece almacenada en LocalStorage hasta cerrar sesión.
+
+---
+
+# Componentes principales
+
+## Login
+
+Responsable del inicio de sesión del usuario.
+
+---
+
+## Header
+
+Muestra el nombre de la aplicación, usuario autenticado y botón de cierre de sesión.
+
+---
+
+## Dashboard
+
+Contenedor principal de la aplicación.
+
+Administra:
+
+- carga de tareas
+- formulario
+- estadísticas
+- búsqueda
+- listado
+
+---
+
+## TaskForm
+
+Formulario para crear y editar tareas.
+
+---
+
+## TaskCard
+
+Representa visualmente una tarea.
+
+Permite:
+
+- editar
+- eliminar
+
+---
+
+## TaskStats
+
+Calcula y muestra estadísticas de las tareas.
+
+---
+
+## ErrorAlert
+
+Muestra mensajes de error y confirmaciones para el usuario.
+
+---
+
+# Servicios
+
+## authService.js
+
+Contiene la lógica relacionada con:
+
+- inicio de sesión
+- cierre de sesión
+- validación del usuario
+
+---
+
+## taskService.js
+
+Gestiona las peticiones HTTP utilizando Axios.
+
+Incluye:
+
+- GET
+- POST
+- PUT
+- DELETE
+
+---
+
+# Persistencia de datos
+
+La aplicación utiliza dos mecanismos:
+
+## JSON Server
+
+Almacena las tareas.
+
+## LocalStorage
+
+Mantiene la sesión del usuario autenticado.
+
+---
+
+# Características del proyecto
+
+- Arquitectura basada en componentes.
+- Código modular.
+- Separación entre componentes, servicios y utilidades.
+- Comunicación mediante Axios.
+- Estado administrado con React Hooks.
+- Interfaz responsive.
+- Actualización dinámica de la información.
+- Código organizado siguiendo buenas prácticas de React.
+
+---
+
+# Prompt utilizado para la IA Generativa
+
+Durante el desarrollo del proyecto se utilizó IA generativa (Claude AI) como apoyo para la creación de la estructura base del proyecto y algunos componentes, manteniendo posteriormente revisiones, correcciones y adaptaciones manuales para cumplir con los requisitos de la evaluación.
+
+## Prompt utilizado
+
+```
+Desarrolla una aplicación completa de gestión de tareas utilizando React + Vite.
+
+La aplicación debe cumplir los siguientes requisitos:
+
+- Implementar un sistema de login simulado utilizando LocalStorage.
+- Utilizar Axios para consumir una API REST creada con JSON Server.
+- Implementar un CRUD completo de tareas:
+  - Crear
+  - Listar
+  - Editar
+  - Eliminar
+- Organizar el proyecto siguiendo buenas prácticas de React separando:
+  - components
+  - pages
+  - services
+  - api
+  - utils
+- Crear componentes reutilizables.
+- Mantener el estado utilizando React Hooks.
+- Mostrar mensajes de éxito y error cuando corresponda.
+- Confirmar antes de eliminar una tarea.
+- Agregar un buscador para filtrar tareas por título o descripción.
+- Mostrar estadísticas de tareas:
+  - Total
+  - Pendientes
+  - Completadas
+- Utilizar CSS puro con una interfaz limpia, moderna y responsive.
+- Crear un Mock Server utilizando JSON Server.
+- Configurar Axios mediante una instancia reutilizable.
+- Entregar el proyecto completamente funcional, organizado y comentado cuando sea necesario.
+```
+
+## Uso de la IA
+
+La inteligencia artificial fue utilizada únicamente como apoyo para acelerar el desarrollo del proyecto. El código generado fue revisado, probado, corregido y adaptado manualmente para cumplir con los requisitos solicitados en la evaluación.

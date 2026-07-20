@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "titulo": "Preparar presentación ES3",
+      "descripcion": "Hola tio chaval\n",
+      "estado": "en progreso",
+      "id": 1
+    },
+    {
+      "titulo": "Test",
+      "descripcion": "Test",
+      "estado": "pendiente",
+      "id": 2
+    },
+    {
+      "titulo": "Jolines",
+      "descripcion": "Tio ostias",
+      "estado": "completada",
+      "id": 3
+    }
+  ]
+}
