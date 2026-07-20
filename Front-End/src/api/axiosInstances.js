@@ -18,7 +18,7 @@ axiosInstance.interceptors.request.use(
     
     if (token) {
       // Autenticación HTTP de dinámica
-      config.headers['Authorization'] = `Basic ${token}`; 
+      config.headers['Authorization'] = token;
     }
     return config;
   },

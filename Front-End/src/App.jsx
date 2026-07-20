@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import Login from 'src/components/Login.jsx';
+import Login from './components/Login.jsx';
+import Dashboard from './components/dashboard.jsx';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,8 +59,7 @@ function App() {
           </header>
           
           <main style={{ padding: '20px' }}>
-            <h2>Dashboard</h2>
-            <p>Aquí construiremos la tabla de productos y el filtro de categorías.</p>
+            <Dashboard />
           </main>
         </div>
       )}

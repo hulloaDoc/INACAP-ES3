@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axiosInstance from '../api/axiosInstance.js';
+import axiosInstance from '../api/axiosInstances.js';
 
 const Login = ({ onLoginSuccess }) => {
   // Estado para capturar lo que el usuario escribe
@@ -23,7 +23,7 @@ const Login = ({ onLoginSuccess }) => {
       const response = await axiosInstance.post('/api/login', credentials);
       
       // Extraemos el token y el perfil
-      const { token, perfil } = response.data;
+     const { token, user: perfil } = response.data;
       
       // Guardar token y perfil en LocalStorage de forma segura
       localStorage.setItem('authToken', token);
