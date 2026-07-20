@@ -2,17 +2,14 @@ import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
-    <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+    <header style={{ padding: '10px 20px', background: '#f8f9fa', borderBottom: '1px solid #dee2e6' }}>
       <h2>Gengibre SPA</h2>
-      <ul style={{ display: 'flex', listStyle: 'none', gap: '20px' }}>
-        <li>
-          <Link to="/">Inicio</Link>
-        </li>
-        <li>
-          <Link to="/login">Login</Link>
-        </li>
-      </ul>
-    </nav>
+      <nav style={{ display: 'flex', gap: '15px' }}>
+        <Link to="/">Inicio</Link>
+        <Link to="/login">Login</Link>
+        <Link to="/inventario">Inventario</Link>
+      </nav>
+    </header>
   );
 };
 

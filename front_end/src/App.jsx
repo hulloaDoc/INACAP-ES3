@@ -1,15 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './componentes/Navbar';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './componentes/Login';
+import Inventario from './componentes/Inventario';
+import Navbar from './componentes/Navbar';
 
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<h2 style={{ padding: '20px' }}>Bienvenido al Inicio</h2>} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <div>
+        <Navbar />
+
+        <main style={{ padding: '20px' }}>
+          <Routes>
+            <Route path="/" element={<h3>Bienvenido al sistema de gestión</h3>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/inventario" element={<Inventario />} />
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 }

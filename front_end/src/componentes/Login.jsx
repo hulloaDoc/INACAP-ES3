@@ -2,16 +2,15 @@ import { useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Petición POST usando tu axiosInstance configurada previamente
-      const response = await axiosInstance.post('/api/login', { email, password });
-      localStorage.setItem('token', response.data.token)
+      const response = await axiosInstance.post('/api/login', { username, password });
+      localStorage.setItem('token', response.data.token);
       setMensaje('¡Inicio de sesión exitoso!');
       console.log('Datos de respuesta:', response.data);
     } catch (error) {
@@ -25,11 +24,11 @@ const Login = () => {
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div>
-          <label>Correo electrónico:</label>
+          <label>Username:</label>
           <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+            type="text" 
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)} 
             required 
             style={{ width: '100%', padding: '8px', marginTop: '5px' }}
           />

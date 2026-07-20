@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// 1. Primero creas la instancia configurando la URL base de tu servidor mock
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:4000',
   headers: {
@@ -8,5 +7,16 @@ const axiosInstance = axios.create({
   }
 });
 
-// 2. Después la exportas para poder usarla en tus componentes (como Login.jsx)
+// Interceptor para inyectar el token en las peticiones
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = token;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 export default axiosInstance;
