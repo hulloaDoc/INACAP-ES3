@@ -1,0 +1,38 @@
+/* Barra de búsqueda de productos, sobre el filtro de categoría/stock */
+.search-bar {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 0;
+  background-color: #fff;
+}
+
+.search-bar__input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.search-bar__btn {
+  background-color: #1f2937;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-bar__btn:hover {
+  background-color: #111827;
+}
+
+.search-bar__btn--limpiar {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.search-bar__btn--limpiar:hover {
+  background-color: #cbd5e1;
+}

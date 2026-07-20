@@ -1,0 +1,58 @@
+/* Fondo oscuro semitransparente que cubre toda la pantalla
+   cuando el formulario está abierto (efecto de modal) */
+.product-form__overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+/* Tarjeta blanca del formulario, centrada sobre el overlay */
+.product-form {
+  background-color: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  width: min(420px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.product-form h2 {
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+/* Cada label + input van en columna, uno arriba del otro */
+.product-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.product-form input,
+.product-form select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+}
+
+/* Mensajes de error de validación, en rojo y más chicos */
+.product-form__error {
+  color: #dc2626;
+  font-size: 0.8rem;
+}
+
+/* Fila con los botones de Cancelar / Guardar, alineados a la derecha */
+.product-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}

@@ -1,0 +1,26 @@
+.inventory-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #d0def7;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.inventory-card {
+  width: min(960px, 100%);
+  height: fit-content;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+}
+
+.inventory-page__content {
+  padding: 1.5rem;
+}
+
+.inventory-page__loading {
+  color: #64748b;
+  padding: 1rem 0;
+}
