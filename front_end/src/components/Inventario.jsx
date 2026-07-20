@@ -1,31 +1,34 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import TablaProductos from "./TablaProductos";
+import FormularioProducto from "./FormularioProducto";
 
 function Inventario() {
 
     const [productos, setProductos] = useState([]);
+    const [productoEditar, setProductoEditar] = useState(null);
+
+    const cargarProductos = async () => {
+
+        try {
+
+            const respuesta = await api.get("/productos");
+
+            setProductos(respuesta.data);
+
+            console.log(respuesta.data);
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
 
     useEffect(() => {
 
-        const obtenerProductos = async () => {
-
-            try {
-
-                const respuesta = await api.get("/productos");
-
-                setProductos(respuesta.data);
-
-                console.log(respuesta.data);
-
-            } catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-
-        obtenerProductos();
+        cargarProductos();
 
     }, []);
 
@@ -42,56 +45,35 @@ function Inventario() {
 
             <button>+ Nuevo Producto</button>
 
+            <FormularioProducto
+                cargarProductos={cargarProductos}
+                productoEditar={productoEditar}
+                setProductoEditar={setProductoEditar}
+            />
+
             <br />
             <br />
 
-            <table border="1" cellPadding="10">
+            <TablaProductos
+                productos={productos}
+                cargarProductos={cargarProductos}
+                setProductoEditar={setProductoEditar}
 
-                <thead>
+                
+            />
+                <hr />
 
-                    <tr>
-                        <th>ID</th>
-                        <th>Producto</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
-                        <th>Categoría</th>
-                        <th>Acciones</th>
-                    </tr>
+            <h3>Historial de acciones</h3>
 
-                </thead>
+            <ul>
 
-                <tbody>
+        {(JSON.parse(localStorage.getItem("historial")) || []).map((item, index) => (
 
-                    {productos.map((producto) => (
+        <li key={index}>{item}</li>
 
-                        <tr key={producto.id}>
+        ))}
 
-                            <td>{producto.id}</td>
-
-                            <td>{producto.nombre}</td>
-
-                            <td>${producto.precio}</td>
-
-                            <td>{producto.stock}</td>
-
-                            <td>{producto.categoria}</td>
-
-                            <td>
-
-                                <button>Editar</button>{" "}
-
-                                <button>Eliminar</button>
-
-                            </td>
-
-                        </tr>
-
-                    ))}
-
-                </tbody>
-
-            </table>
-
+        </ul>
         </div>
     );
 }
