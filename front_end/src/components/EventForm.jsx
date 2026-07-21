@@ -1,18 +1,38 @@
 import { useEffect, useState } from 'react';
+import roomService from '../services/roomService';
 
 const emptyEvent = {
     title: '',
     description: '',
     date: '',
     location: '',
+    roomId: '',
 };
 
 function EventForm({ initialEvent = null, onSubmit, onCancel }) {
     const [formData, setFormData] = useState(emptyEvent);
     const [errors, setErrors] = useState({});
+    const [rooms, setRooms] = useState([]);
 
     useEffect(() => {
-        setFormData(initialEvent ? { ...initialEvent } : emptyEvent);
+        const loadRooms = async () => {
+            const data = await roomService.getRooms();
+            setRooms(data);
+        };
+
+        loadRooms();
+    }, []);
+
+    useEffect(() => {
+        setFormData(
+            initialEvent
+                ? {
+                    ...emptyEvent,
+                    ...initialEvent,
+                    roomId: initialEvent.roomId || initialEvent.room?.id || '',
+                }
+                : emptyEvent
+        );
         setErrors({});
     }, [initialEvent]);
 
@@ -49,6 +69,7 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
             title: formData.title.trim(),
             description: formData.description.trim(),
             location: formData.location.trim(),
+            roomId: formData.roomId || '',
         };
 
         if (onSubmit) {
@@ -101,6 +122,17 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
                         value={formData.location}
                         onChange={handleChange}
                     />
+                </div>
+                <div className="col-12">
+                    <label className="form-label">Sala</label>
+                    <select className="form-select" name="roomId" value={formData.roomId} onChange={handleChange}>
+                        <option value="">Seleccione una sala</option>
+                        {rooms.map((room) => (
+                            <option key={room.id} value={room.id}>
+                                {room.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
             <div className="mt-3 d-flex gap-2">
