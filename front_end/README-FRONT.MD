@@ -1,1 +1,0 @@
-en esta carpeta deben tener los elementos de su proyecto. Recuerden que tener una carpeta es importante dado que cada proyecto tiene liberias distintas.
