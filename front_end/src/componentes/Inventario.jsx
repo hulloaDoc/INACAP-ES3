@@ -10,6 +10,8 @@ const Inventario = () => {
   const [productoEditandoId, setProductoEditandoId] = useState(null);
   const [mensajeError, setMensajeError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [filtroCategoria, setFiltroCategoria] = useState('Todas');
+  const [filtroStock, setFiltroStock] = useState('Todos');
   
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre: '',
@@ -59,6 +61,20 @@ const Inventario = () => {
       console.error("Error al obtener las categorías:", error);
     }
   };
+
+  // Lógica de filtrado según wireframe
+  const productosFiltrados = productos.filter((prod) => {
+    const cumpleCategoria = filtroCategoria === 'Todas' || prod.categoria === filtroCategoria;
+    
+    let cumpleStock = true;
+    if (filtroStock === 'En stock') {
+      cumpleStock = Number(prod.stock) > 0;
+    } else if (filtroStock === 'Sin stock') {
+      cumpleStock = Number(prod.stock) === 0;
+    }
+    
+    return cumpleCategoria && cumpleStock;
+  });
 
   const iniciarEdicion = (prod) => {
     setProductoEditandoId(prod.id);
@@ -136,7 +152,7 @@ const Inventario = () => {
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       
-      {/* Cabecera que oculta el bloque de usuario/logout si no hay sesión activa */}
+      {/* Cabecera */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -164,6 +180,48 @@ const Inventario = () => {
         </div>
       </div>
 
+      {/* Barra de Filtros (Independiente) */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '20px', 
+        background: '#f1f1f1', 
+        padding: '10px 15px', 
+        borderRadius: '5px', 
+        marginBottom: '15px',
+        alignItems: 'center',
+        flexWrap: 'wrap'
+      }}>
+        <div>
+          <label style={{ marginRight: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>Categoría:</label>
+          <select 
+            value={filtroCategoria} 
+            onChange={(e) => setFiltroCategoria(e.target.value)}
+            style={{ padding: '5px', borderRadius: '4px' }}
+          >
+            <option value="Todas">Todas</option>
+            {categorias.length > 0 ? (
+              categorias.map((cat, idx) => <option key={idx} value={cat}>{cat}</option>)
+            ) : (
+              <option value="Abarrotes">Abarrotes</option>
+            )}
+          </select>
+        </div>
+
+        <div>
+          <label style={{ marginRight: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>Filtrar por stock:</label>
+          <select 
+            value={filtroStock} 
+            onChange={(e) => setFiltroStock(e.target.value)}
+            style={{ padding: '5px', borderRadius: '4px' }}
+          >
+            <option value="Todos">Todos</option>
+            <option value="En stock">En stock</option>
+            <option value="Sin stock">Sin stock</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Botón Agregar Producto */}
       <button 
         onClick={abrirFormularioCreacion}
         style={{ margin: '10px 0', padding: '8px 12px', background: '#28a745', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px' }}
@@ -237,8 +295,8 @@ const Inventario = () => {
           </tr>
         </thead>
         <tbody>
-          {productos.length > 0 ? (
-            productos.map((prod) => (
+          {productosFiltrados.length > 0 ? (
+            productosFiltrados.map((prod) => (
               <tr key={prod.id}>
                 <td style={{ textAlign: 'center' }}>{prod.id}</td>
                 <td>{prod.nombre}</td>
@@ -253,7 +311,7 @@ const Inventario = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="6" style={{ textAlign: 'center' }}>Cargando productos o sin registros...</td>
+              <td colSpan="6" style={{ textAlign: 'center' }}>No se encontraron productos con los filtros seleccionados...</td>
             </tr>
           )}
         </tbody>
