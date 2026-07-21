@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 
-const ESTADOS = ['pendiente', 'en progreso', 'completada'];
+const PRIORIDADES = ['Alta', 'Media', 'Baja'];
 
-const emptyForm = { titulo: '', descripcion: '', estado: 'pendiente' };
+const emptyForm = { titulo: '', descripcion: '', prioridad: 'Media', responsable: '', completada: false };
 
 /**
  * Formulario para crear o editar una tarea.
  * @param {{
  *   onSubmit: (task: object) => void,
  *   editingTask: object | null,
- *   onCancelEdit: () => void
+ *   onCancelEdit: () => void,
+ *   usuarios: string[]
  * }} props
  */
-function TaskForm({ onSubmit, editingTask, onCancelEdit }) {
+function TaskForm({ onSubmit, editingTask, onCancelEdit, usuarios = [] }) {
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -20,25 +21,28 @@ function TaskForm({ onSubmit, editingTask, onCancelEdit }) {
       setForm({
         titulo: editingTask.titulo,
         descripcion: editingTask.descripcion,
-        estado: editingTask.estado || 'pendiente',
+        prioridad: editingTask.prioridad || 'Media',
+        responsable: editingTask.responsable || usuarios[0] || '',
+        completada: !!editingTask.completada,
       });
     } else {
-      setForm(emptyForm);
+      setForm({ ...emptyForm, responsable: usuarios[0] || '' });
     }
-  }, [editingTask]);
+  }, [editingTask, usuarios]);
 
   const handleChange = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!form.titulo.trim()) return;
+    if (!form.titulo.trim() || !form.descripcion.trim() || !form.responsable) return;
 
     onSubmit({ ...form });
 
     if (!editingTask) {
-      setForm(emptyForm);
+      setForm({ ...emptyForm, responsable: usuarios[0] || '' });
     }
   };
 
@@ -64,18 +68,40 @@ function TaskForm({ onSubmit, editingTask, onCancelEdit }) {
           onChange={handleChange('descripcion')}
           placeholder="Descripción de la tarea"
           rows={3}
+          required
         />
       </label>
 
       <label className="field">
-        <span>Estado</span>
-        <select value={form.estado} onChange={handleChange('estado')}>
-          {ESTADOS.map((estado) => (
-            <option key={estado} value={estado}>
-              {estado}
+        <span>Prioridad</span>
+        <select value={form.prioridad} onChange={handleChange('prioridad')}>
+          {PRIORIDADES.map((prioridad) => (
+            <option key={prioridad} value={prioridad}>
+              {prioridad}
             </option>
           ))}
         </select>
+      </label>
+
+      <label className="field">
+        <span>Responsable</span>
+        <select value={form.responsable} onChange={handleChange('responsable')} required>
+          {usuarios.length === 0 && <option value="">Cargando usuarios...</option>}
+          {usuarios.map((usuario) => (
+            <option key={usuario} value={usuario}>
+              {usuario}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="field field--checkbox">
+        <input
+          type="checkbox"
+          checked={form.completada}
+          onChange={handleChange('completada')}
+        />
+        <span>Completada</span>
       </label>
 
       <div className="task-form__actions">

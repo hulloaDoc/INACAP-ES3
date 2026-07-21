@@ -1,6 +1,6 @@
 import axiosInstance from '../api/axiosInstance';
 
-const RESOURCE = '/tasks';
+const RESOURCE = '/tareas';
 
 /**
  * Obtiene todas las tareas.
@@ -13,7 +13,7 @@ export const getTasks = async () => {
 
 /**
  * Crea una nueva tarea.
- * @param {{ titulo: string, descripcion: string, estado: string }} task
+ * @param {{ titulo: string, descripcion: string, prioridad: string, responsable: string, completada: boolean }} task
  * @returns {Promise<Object>}
  */
 export const createTask = async (task) => {
@@ -24,7 +24,7 @@ export const createTask = async (task) => {
 /**
  * Actualiza una tarea existente.
  * @param {string|number} id
- * @param {{ titulo: string, descripcion: string, estado: string }} task
+ * @param {{ titulo: string, descripcion: string, prioridad: string, responsable: string, completada: boolean }} task
  * @returns {Promise<Object>}
  */
 export const updateTask = async (id, task) => {
@@ -39,4 +39,14 @@ export const updateTask = async (id, task) => {
  */
 export const deleteTask = async (id) => {
   await axiosInstance.delete(`${RESOURCE}/${id}`);
+};
+
+/**
+ * Obtiene la lista de usuarios/responsables disponibles (GET /api/usuarios),
+ * usada para poblar el selector de "Responsable" en el formulario de tareas.
+ * @returns {Promise<string[]>}
+ */
+export const getUsuarios = async () => {
+  const response = await axiosInstance.get('/usuarios');
+  return response.data;
 };

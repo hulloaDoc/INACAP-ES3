@@ -7,7 +7,7 @@ import ErrorAlert from './ErrorAlert';
  * @param {{ onLoginSuccess: () => void }} props
  */
 function Login({ onLoginSuccess }) {
-  const [correo, setCorreo] = useState('');
+  const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
 
@@ -15,12 +15,12 @@ function Login({ onLoginSuccess }) {
     event.preventDefault();
     setError('');
 
-    login(correo, contrasena)
+    login(usuario, contrasena)
       .then(() => {
         onLoginSuccess();
       })
       .catch((err) => {
-        setError(err.message || 'No fue posible iniciar sesión.');
+        setError(err.mensaje || err.message || 'No fue posible iniciar sesión.');
       });
   };
 
@@ -33,12 +33,12 @@ function Login({ onLoginSuccess }) {
         <ErrorAlert mensaje={error} tipo="error" onClose={() => setError('')} />
 
         <label className="field">
-          <span>Correo</span>
+          <span>Usuario</span>
           <input
-            type="email"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            placeholder="admin@inacap.cl"
+            type="text"
+            value={usuario}
+            onChange={(e) => setUsuario(e.target.value)}
+            placeholder="admin"
             required
           />
         </label>

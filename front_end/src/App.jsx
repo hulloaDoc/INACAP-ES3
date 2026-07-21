@@ -1,19 +1,31 @@
 import { useEffect, useState } from 'react';
 import Login from './components/Login';
 import Dashboard from './pages/Dashboard';
-import { getSession, clearSession } from './utils/localStorage';
-import { logout as authLogout } from './services/authService';
+import { getSession, clearSession, getPreferences, savePreferences } from './utils/localStorage';
+import { logout as authLogout, getPerfil } from './services/authService';
 import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkedSession, setCheckedSession] = useState(false);
+  const [theme, setTheme] = useState(() => getPreferences().theme);
 
   useEffect(() => {
-    // Si no existe sesión, se mantiene al usuario en el Login (redirección automática).
+    // Si no existe sesión (o el token quedó inválido), se mantiene al
+    // usuario en el Login (redirección automática).
     const session = getSession();
-    setIsAuthenticated(!!session);
-    setCheckedSession(true);
+    if (!session) {
+      setCheckedSession(true);
+      return;
+    }
+
+    // Se valida el token contra el endpoint de perfil real. Si el token
+    // fue revocado o el servidor lo rechaza, el interceptor de Axios
+    // limpia la sesión automáticamente (ver api/axiosInstance.js).
+    getPerfil()
+      .then(() => setIsAuthenticated(true))
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setCheckedSession(true));
   }, []);
 
   const handleLoginSuccess = () => {
@@ -26,14 +38,26 @@ function App() {
     setIsAuthenticated(false);
   };
 
+  const handleToggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      savePreferences({ theme: next });
+      return next;
+    });
+  };
+
   if (!checkedSession) {
     return null;
   }
 
-  return isAuthenticated ? (
-    <Dashboard onLogout={handleLogout} />
-  ) : (
-    <Login onLoginSuccess={handleLoginSuccess} />
+  return (
+    <div data-theme={theme}>
+      {isAuthenticated ? (
+        <Dashboard onLogout={handleLogout} theme={theme} onToggleTheme={handleToggleTheme} />
+      ) : (
+        <Login onLoginSuccess={handleLoginSuccess} />
+      )}
+    </div>
   );
 }
 
