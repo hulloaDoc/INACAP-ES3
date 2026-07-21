@@ -23,6 +23,21 @@ const Dashboard = () => {
     fetchProductos();
   }, []);
 
+  const eliminarProducto = async (id) => {
+    const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+    if (!confirmar) return;
+
+    try {
+      await axiosInstance.delete(`/api/productos/${id}`);
+      // Si el servidor lo borra con éxito, lo quitamos de nuestra pantalla
+      setProductos(productos.filter(producto => producto.id !== id));
+      alert('Producto eliminado exitosamente');
+    } catch (err) {
+      console.error("Error al eliminar:", err);
+      alert('Hubo un error al eliminar el producto.');
+    }
+  };
+
   if (cargando) return <p style={{ padding: '20px' }}>Cargando inventario...</p>;
   if (error) return <p style={{ color: 'red', padding: '20px' }}>{error}</p>;
 
@@ -65,7 +80,7 @@ const Dashboard = () => {
               </td>
               <td style={{ padding: '12px' }}>
                 <button style={{ marginRight: '10px', padding: '5px 10px', background: '#ffc107', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Editar</button>
-                <button style={{ padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Eliminar</button>
+                <button onClick={() => eliminarProducto(producto.id)} style={{ padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Eliminar</button>
               </td>
             </tr>
           ))}
