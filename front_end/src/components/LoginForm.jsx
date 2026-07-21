@@ -1,11 +1,18 @@
 import { useState } from 'react';
+import useAuth from '../hooks/useAuth';
 
 function LoginForm() {
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
+    const { login } = useAuth();
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        await login(user, password);
+    };
 
     return (
-        <form className="w-100">
+        <form className="w-100" onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label htmlFor="usuario" className="form-label">
                     Usuario
