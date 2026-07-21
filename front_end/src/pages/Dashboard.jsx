@@ -4,10 +4,12 @@ import EventTable from '../components/EventTable';
 import SearchBar from '../components/SearchBar';
 import SearchHistory from '../components/SearchHistory';
 import eventService from '../services/eventService';
+import useStorage from '../hooks/useStorage';
 
 function Dashboard() {
     const [events, setEvents] = useState([]);
     const [editingEvent, setEditingEvent] = useState(null);
+    const { searchHistory, addSearch, clearHistory } = useStorage();
 
     const loadEvents = async () => {
         const data = await eventService.getEvents();
