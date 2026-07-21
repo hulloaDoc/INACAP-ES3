@@ -6,6 +6,11 @@
 
 body {
     margin: 0;
+    background: linear-gradient(180deg, #f8f9fa 0%, #eef2f7 100%);
+}
+
+#root {
+    min-height: 100vh;
 }
 
 .app-shell {
@@ -17,4 +22,13 @@ body {
 .app-main {
     flex: 1;
     padding: 1rem;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
 }

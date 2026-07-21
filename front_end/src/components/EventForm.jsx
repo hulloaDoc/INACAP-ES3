@@ -93,9 +93,9 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
     };
 
     return (
-        <form className="card p-3 mb-4" onSubmit={handleSubmit}>
+        <form className="card shadow-sm border-0 p-3 p-md-4 mb-4" onSubmit={handleSubmit}>
             {errorMessage ? <ErrorAlert message={errorMessage} onClose={() => setErrorMessage('')} /> : null}
-            <h3 className="h5">{initialEvent ? 'Editar evento' : 'Crear evento'}</h3>
+            <h3 className="h5 fw-bold mb-3">{initialEvent ? 'Editar evento' : 'Crear evento'}</h3>
             <div className="row g-3">
                 <div className="col-md-6">
                     <label className="form-label">Título</label>
@@ -127,7 +127,7 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
                         onChange={handleChange}
                     />
                 </div>
-                <div className="col-12">
+                <div className="col-md-6">
                     <label className="form-label">Ubicación</label>
                     <input
                         className="form-control"
@@ -136,7 +136,7 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
                         onChange={handleChange}
                     />
                 </div>
-                <div className="col-12">
+                <div className="col-md-6">
                     <label className="form-label">Sala</label>
                     <select className="form-select" name="roomId" value={formData.roomId} onChange={handleChange}>
                         <option value="">Seleccione una sala</option>
@@ -148,7 +148,7 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
                     </select>
                 </div>
             </div>
-            <div className="mt-3 d-flex gap-2">
+            <div className="mt-3 d-flex flex-column flex-sm-row gap-2">
                 <button className="btn btn-primary" type="submit">
                     {initialEvent ? 'Guardar cambios' : 'Crear evento'}
                 </button>
