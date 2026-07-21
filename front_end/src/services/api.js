@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Instancia centralizada de Axios para mantener un flujo único de peticiones HTTP.
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
     timeout: 10000,

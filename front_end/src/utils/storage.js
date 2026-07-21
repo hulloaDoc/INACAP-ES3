@@ -1,5 +1,6 @@
 const SEARCH_HISTORY_KEY = 'searchHistory';
 
+// Helper local para gestionar el historial de búsquedas con protección ante datos inválidos.
 export const storage = {
     saveSearchHistory: (history) => {
         try {

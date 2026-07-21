@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import authService from '../services/authService';
 
 function useAuth() {
+    // Estado principal de la sesión del usuario para controlar el acceso a la SPA.
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
