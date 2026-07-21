@@ -7,7 +7,6 @@ const Dashboard = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Función para obtener los productos del backend
     const fetchProductos = async () => {
       try {
         const response = await axiosInstance.get('/api/productos');
@@ -23,13 +22,43 @@ const Dashboard = () => {
     fetchProductos();
   }, []);
 
+  const guardarPreferencias = () => {
+    const preferencias = { 
+      vista: 'tabla_completa', 
+      ultimaModificacion: new Date().toISOString() 
+    };
+    localStorage.setItem('preferenciasApp', JSON.stringify(preferencias));
+    alert('Preferencias guardadas localmente.');
+  };
+
+  const cargarPreferencias = () => {
+    try {
+      const data = localStorage.getItem('preferenciasApp');
+      if (data) {
+        const preferenciasParseadas = JSON.parse(data); 
+        console.log("Preferencias cargadas de forma segura:", preferenciasParseadas);
+        alert('Preferencias cargadas en consola.');
+      } else {
+        alert('No hay preferencias guardadas.');
+      }
+    } catch (error) {
+
+      console.error("Error de integridad: Datos corruptos en LocalStorage");
+      localStorage.removeItem('preferenciasApp'); 
+    }
+  };
+
+  const borrarPreferencias = () => {
+    localStorage.removeItem('preferenciasApp');
+    alert('Preferencias borradas del sistema.');
+  };
+
   const eliminarProducto = async (id) => {
     const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
     if (!confirmar) return;
 
     try {
       await axiosInstance.delete(`/api/productos/${id}`);
-      // Si el servidor lo borra con éxito, lo quitamos de nuestra pantalla
       setProductos(productos.filter(producto => producto.id !== id));
       alert('Producto eliminado exitosamente');
     } catch (err) {
@@ -48,6 +77,9 @@ const Dashboard = () => {
         <button style={{ padding: '10px 15px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
           + Nuevo Producto
         </button>
+        <button onClick={guardarPreferencias} style={{ padding: '5px', marginLeft: '10px' }}>Guardar Pref</button>
+        <button onClick={cargarPreferencias} style={{ padding: '5px', marginLeft: '10px' }}>Cargar Pref</button>
+        <button onClick={borrarPreferencias} style={{ padding: '5px', marginLeft: '10px' }}>Borrar Pref</button>
       </div>
 
       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', border: '1px solid #ddd' }}>
