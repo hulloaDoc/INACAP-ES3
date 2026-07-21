@@ -155,3 +155,12 @@ El servidor mock de la API no cuenta con dependencias npm externas para facilita
 node mock_api_server.js
 ```
 El servidor comenzará a escuchar peticiones en la dirección `http://localhost:4000`.
+
+
+## Uso de Inteligencia Artificial
+
+### Prompts Utilizados
+"Actúa como un desarrollador experto en React y seguridad web. Genera un ecosistema modular completo partiendo desde un repositorio limpio. Inicializa un entorno de React con Vite e integra Axios mediante un archivo centralizado `axiosInstance.js` con un interceptor de solicitudes asíncronas que inyecte tokens de autenticación de forma dinámica desde `LocalStorage`."
+
+### Análisis Crítico 
+Se adoptó la arquitectura modular sugerida dividiendo la vista principal en componentes independientes (Header, ProductForm, ErrorAlert y la vista de administración), garantizando un código mantenible bajo los estándares exigidos por la rúbrica entregada. Se refactorizó la propuesta inicial de la IA eliminando cualquier manipulación directa del DOM (como innerHTML) y restringiendo el procesamiento de inputs a tipos primitivos y serializaciones JSON estrictas, mitigando de forma nativa vulnerabilidades de inyección de código (XSS) al leer o persistir registros en la Bitácora de Auditoría de LocalStorage.
