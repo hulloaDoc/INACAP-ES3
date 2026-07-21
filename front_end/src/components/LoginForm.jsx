@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
+import ErrorAlert from './ErrorAlert';
 
 function LoginForm() {
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const { login } = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await login(user, password);
+        setErrorMessage('');
+
+        const success = await login(user, password);
+        if (!success) {
+            setErrorMessage('No se pudo iniciar sesión.');
+        }
     };
 
     return (
         <form className="w-100" onSubmit={handleSubmit}>
+            {errorMessage ? <ErrorAlert message={errorMessage} onClose={() => setErrorMessage('')} /> : null}
             <div className="mb-3">
                 <label htmlFor="usuario" className="form-label">
                     Usuario

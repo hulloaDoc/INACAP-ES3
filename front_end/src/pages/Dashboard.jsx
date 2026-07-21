@@ -3,17 +3,24 @@ import EventForm from '../components/EventForm';
 import EventTable from '../components/EventTable';
 import SearchBar from '../components/SearchBar';
 import SearchHistory from '../components/SearchHistory';
+import ErrorAlert from '../components/ErrorAlert';
 import eventService from '../services/eventService';
 import useStorage from '../hooks/useStorage';
 
 function Dashboard() {
     const [events, setEvents] = useState([]);
     const [editingEvent, setEditingEvent] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
     const { searchHistory, addSearch, clearHistory } = useStorage();
 
     const loadEvents = async () => {
-        const data = await eventService.getEvents();
-        setEvents(data);
+        try {
+            const data = await eventService.getEvents();
+            setEvents(data);
+            setErrorMessage('');
+        } catch {
+            setErrorMessage('No se pudieron cargar los eventos.');
+        }
     };
 
     useEffect(() => {
@@ -21,21 +28,33 @@ function Dashboard() {
     }, []);
 
     const handleCreate = async (event) => {
-        await eventService.createEvent(event);
-        await loadEvents();
+        try {
+            await eventService.createEvent(event);
+            await loadEvents();
+        } catch {
+            setErrorMessage('No se pudo crear el evento.');
+        }
     };
 
     const handleUpdate = async (event) => {
-        await eventService.updateEvent(event.id, event);
-        await loadEvents();
-        setEditingEvent(null);
+        try {
+            await eventService.updateEvent(event.id, event);
+            await loadEvents();
+            setEditingEvent(null);
+        } catch {
+            setErrorMessage('No se pudo actualizar el evento.');
+        }
     };
 
     const handleDelete = async (id) => {
-        await eventService.deleteEvent(id);
-        await loadEvents();
-        if (editingEvent?.id === id) {
-            setEditingEvent(null);
+        try {
+            await eventService.deleteEvent(id);
+            await loadEvents();
+            if (editingEvent?.id === id) {
+                setEditingEvent(null);
+            }
+        } catch {
+            setErrorMessage('No se pudo eliminar el evento.');
         }
     };
 
@@ -46,6 +65,7 @@ function Dashboard() {
     return (
         <section className="container py-4">
             <h1>Dashboard</h1>
+            {errorMessage ? <ErrorAlert message={errorMessage} onClose={() => setErrorMessage('')} /> : null}
             <SearchBar />
             <SearchHistory />
             <EventForm

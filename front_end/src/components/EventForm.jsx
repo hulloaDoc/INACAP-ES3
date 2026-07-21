@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import roomService from '../services/roomService';
+import ErrorAlert from './ErrorAlert';
 
 const emptyEvent = {
     title: '',
@@ -13,11 +14,17 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
     const [formData, setFormData] = useState(emptyEvent);
     const [errors, setErrors] = useState({});
     const [rooms, setRooms] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const loadRooms = async () => {
-            const data = await roomService.getRooms();
-            setRooms(data);
+            try {
+                const data = await roomService.getRooms();
+                setRooms(data);
+                setErrorMessage('');
+            } catch {
+                setErrorMessage('No se pudieron cargar las salas.');
+            }
         };
 
         loadRooms();
@@ -55,8 +62,9 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
         return nextErrors;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setErrorMessage('');
         const nextErrors = validate();
 
         if (Object.keys(nextErrors).length > 0) {
@@ -72,16 +80,21 @@ function EventForm({ initialEvent = null, onSubmit, onCancel }) {
             roomId: formData.roomId || '',
         };
 
-        if (onSubmit) {
-            onSubmit(payload);
-        }
+        try {
+            if (onSubmit) {
+                await onSubmit(payload);
+            }
 
-        setFormData(emptyEvent);
-        setErrors({});
+            setFormData(emptyEvent);
+            setErrors({});
+        } catch {
+            setErrorMessage('No se pudo guardar el evento.');
+        }
     };
 
     return (
         <form className="card p-3 mb-4" onSubmit={handleSubmit}>
+            {errorMessage ? <ErrorAlert message={errorMessage} onClose={() => setErrorMessage('')} /> : null}
             <h3 className="h5">{initialEvent ? 'Editar evento' : 'Crear evento'}</h3>
             <div className="row g-3">
                 <div className="col-md-6">
