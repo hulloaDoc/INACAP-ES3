@@ -1,14 +1,13 @@
 import axiosInstance from "../api/axiosInstance";
+import { logAction } from "../utils/logger";   // ✅ importar helper
 
 export default function ProductCard({ producto, onDelete }) {
     const handleDelete = async () => {
     try {
         await axiosInstance.delete(`/productos/${producto.id}`);
 
-      // Bitácora en LocalStorage
-        const log = JSON.parse(localStorage.getItem("bitacora") || "[]");
-        log.push(`[${new Date().toLocaleTimeString()}] admin eliminó producto ID ${producto.id}`);
-        localStorage.setItem("bitacora", JSON.stringify(log));
+      // ✅ usar helper
+        logAction(`admin eliminó producto ID ${producto.id}`);
 
         onDelete(producto.id);
     } catch (err) {

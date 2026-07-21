@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { logAction } from "../utils/logger";   // ✅ importar helper
 
 export default function ProductForm({ onSuccess }) {
     const [nombre, setNombre] = useState("");
@@ -17,10 +18,8 @@ export default function ProductForm({ onSuccess }) {
         categoria,
         });
 
-      // Bitácora en LocalStorage
-        const log = JSON.parse(localStorage.getItem("bitacora") || "[]");
-        log.push(`[${new Date().toLocaleTimeString()}] admin agregó producto ID ${res.data.id}`);
-        localStorage.setItem("bitacora", JSON.stringify(log));
+      // ✅ usar helper
+        logAction(`admin agregó producto ID ${res.data.id}`);
 
       onSuccess(); // refresca la lista
         setNombre(""); setPrecio(""); setStock(""); setCategoria("Abarrotes");
