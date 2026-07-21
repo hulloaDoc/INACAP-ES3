@@ -2,10 +2,11 @@ import { getSession } from '../utils/localStorage';
 
 /**
  * Header de la aplicación.
- * @param {{ onLogout?: () => void }} props
+ * @param {{ onLogout?: () => void, theme?: 'light' | 'dark', onToggleTheme?: () => void }} props
  */
-function Header({ onLogout }) {
+function Header({ onLogout, theme = 'light', onToggleTheme }) {
   const session = getSession();
+  const user = session?.user;
 
   return (
     <header className="app-header">
@@ -14,20 +15,36 @@ function Header({ onLogout }) {
         <span className="app-header__subtitle">INACAP · ES3</span>
       </div>
 
-      {session && (
-        <div className="app-header__user">
-          <span className="app-header__email">{session.email}</span>
-          {onLogout && (
-            <button
-              type="button"
-              className="btn btn--outline"
-              onClick={onLogout}
-            >
-              Cerrar sesión
-            </button>
-          )}
-        </div>
-      )}
+      <div className="app-header__user">
+        {onToggleTheme && (
+          <button
+            type="button"
+            className="btn btn--outline btn--small"
+            onClick={onToggleTheme}
+            aria-label="Cambiar tema"
+            title="Cambiar tema claro/oscuro"
+          >
+            {theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}
+          </button>
+        )}
+
+        {user && (
+          <span className="app-header__email">
+            Bienvenido, {user.nombre || user.username}
+            {user.rol ? ` (Rol: ${user.rol})` : ''}
+          </span>
+        )}
+
+        {onLogout && (
+          <button
+            type="button"
+            className="btn btn--outline"
+            onClick={onLogout}
+          >
+            Cerrar sesión
+          </button>
+        )}
+      </div>
     </header>
   );
 }

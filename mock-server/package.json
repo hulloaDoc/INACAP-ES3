@@ -2,10 +2,9 @@
   "name": "task-tracker-mock-server",
   "private": true,
   "version": "1.0.0",
+  "description": "Servidor Mock API (Node http nativo) para la Evaluación Sumativa 3 - INACAP",
   "scripts": {
-    "start": "json-server --watch db.json --port 3001"
-  },
-  "dependencies": {
-    "json-server": "^0.17.4"
+    "start": "node mock_api_server.js",
+    "dev": "node --watch mock_api_server.js"
   }
 }

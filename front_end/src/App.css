@@ -337,6 +337,42 @@
   color: #166534;
 }
 
+.badge--alta {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge--media {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge--baja {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.task-card__badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.task-card__responsable {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.field--checkbox input {
+  width: auto;
+}
+
 /* ===== Alertas ===== */
 .alert {
   display: flex;
@@ -460,4 +496,21 @@
   .login-card {
     padding: 24px;
   }
+}
+
+/* ===== Tema oscuro (preferencia persistida en LocalStorage) ===== */
+[data-theme='dark'] {
+  --color-bg: #0f172a;
+  --color-white: #1e293b;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme='dark'] .field input,
+[data-theme='dark'] .field textarea,
+[data-theme='dark'] .field select {
+  background-color: #0f172a;
+  color: var(--color-text);
 }

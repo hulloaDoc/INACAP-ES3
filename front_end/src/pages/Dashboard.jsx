@@ -4,14 +4,15 @@ import TaskForm from '../components/TaskForm';
 import TaskCard from '../components/TaskCard';
 import TaskStats from '../components/TaskStats';
 import ErrorAlert from '../components/ErrorAlert';
-import { getTasks, createTask, updateTask, deleteTask } from '../services/taskService';
+import { getTasks, createTask, updateTask, deleteTask, getUsuarios } from '../services/taskService';
 
 /**
  * Página principal: lista y administra las tareas del usuario.
- * @param {{ onLogout: () => void }} props
+ * @param {{ onLogout: () => void, theme?: string, onToggleTheme?: () => void }} props
  */
-function Dashboard({ onLogout }) {
+function Dashboard({ onLogout, theme, onToggleTheme }) {
   const [tasks, setTasks] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [alert, setAlert] = useState({ mensaje: '', tipo: 'exito' });
   const [isLoading, setIsLoading] = useState(true);
@@ -19,15 +20,21 @@ function Dashboard({ onLogout }) {
 
   useEffect(() => {
     loadTasks();
+    getUsuarios()
+      .then((data) => setUsuarios(data))
+      .catch((err) => {
+        // No bloqueamos el dashboard si falla, pero se registra el error.
+        console.error('No fue posible cargar la lista de usuarios/responsables.', err);
+      });
   }, []);
 
   const loadTasks = () => {
     setIsLoading(true);
     getTasks()
       .then((data) => setTasks(data))
-      .catch(() => {
+      .catch((err) => {
         setAlert({
-          mensaje: 'No fue posible conectar con el Mock Server. Verifica que esté corriendo.',
+          mensaje: err.mensaje || 'No fue posible conectar con el Mock Server. Verifica que esté corriendo en el puerto 4000.',
           tipo: 'error',
         });
       })
@@ -44,8 +51,8 @@ function Dashboard({ onLogout }) {
           setEditingTask(null);
           setAlert({ mensaje: 'Tarea actualizada correctamente.', tipo: 'exito' });
         })
-        .catch(() => {
-          setAlert({ mensaje: 'No fue posible actualizar la tarea.', tipo: 'error' });
+        .catch((err) => {
+          setAlert({ mensaje: err.mensaje || 'No fue posible actualizar la tarea.', tipo: 'error' });
         });
     } else {
       createTask(taskData)
@@ -53,8 +60,8 @@ function Dashboard({ onLogout }) {
           setTasks((prev) => [...prev, created]);
           setAlert({ mensaje: 'Tarea creada correctamente.', tipo: 'exito' });
         })
-        .catch(() => {
-          setAlert({ mensaje: 'No fue posible crear la tarea.', tipo: 'error' });
+        .catch((err) => {
+          setAlert({ mensaje: err.mensaje || 'No fue posible crear la tarea.', tipo: 'error' });
         });
     }
   };
@@ -76,8 +83,8 @@ function Dashboard({ onLogout }) {
         }
         setAlert({ mensaje: 'Tarea eliminada correctamente.', tipo: 'exito' });
       })
-      .catch(() => {
-        setAlert({ mensaje: 'No fue posible eliminar la tarea.', tipo: 'error' });
+      .catch((err) => {
+        setAlert({ mensaje: err.mensaje || 'No fue posible eliminar la tarea.', tipo: 'error' });
       });
   };
 
@@ -88,22 +95,23 @@ function Dashboard({ onLogout }) {
     return tasks.filter(
       (task) =>
         task.titulo?.toLowerCase().includes(term) ||
-        task.descripcion?.toLowerCase().includes(term)
+        task.descripcion?.toLowerCase().includes(term) ||
+        task.responsable?.toLowerCase().includes(term)
     );
   }, [tasks, searchTerm]);
 
   const stats = useMemo(
     () => ({
       total: tasks.length,
-      pendientes: tasks.filter((t) => t.estado === 'pendiente').length,
-      completadas: tasks.filter((t) => t.estado === 'completada').length,
+      pendientes: tasks.filter((t) => !t.completada).length,
+      completadas: tasks.filter((t) => t.completada).length,
     }),
     [tasks]
   );
 
   return (
     <div className="dashboard">
-      <Header onLogout={onLogout} />
+      <Header onLogout={onLogout} theme={theme} onToggleTheme={onToggleTheme} />
 
       <main className="dashboard__content">
         <ErrorAlert
@@ -116,6 +124,7 @@ function Dashboard({ onLogout }) {
           onSubmit={handleSubmit}
           editingTask={editingTask}
           onCancelEdit={handleCancelEdit}
+          usuarios={usuarios}
         />
 
         <TaskStats
@@ -130,7 +139,7 @@ function Dashboard({ onLogout }) {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar tareas por título o descripción..."
+            placeholder="Buscar tareas por título, descripción o responsable..."
           />
         </div>
 

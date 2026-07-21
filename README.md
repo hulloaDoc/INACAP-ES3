@@ -13,9 +13,9 @@ Evaluación ES3
 
 ## Descripción
 
-Task Tracker es una aplicación web desarrollada con React y Vite para la gestión de tareas. El proyecto implementa un CRUD completo (Crear, Leer, Actualizar y Eliminar) utilizando un Mock Server con JSON Server como API REST simulada.
+Task Tracker es una aplicación web desarrollada con React y Vite para la gestión de tareas. El proyecto implementa un CRUD completo (Crear, Leer, Actualizar y Eliminar) consumiendo un Mock API propio (`mock-server/mock_api_server.js`), construido sobre el módulo nativo `http` de Node.js con arquitectura de controladores/router/middleware, que expone el recurso `/api/tareas` protegido con autenticación HTTP Basic Auth.
 
-La aplicación incorpora autenticación simulada, manejo de estado con React Hooks, comunicación HTTP mediante Axios y almacenamiento local utilizando LocalStorage para mantener la sesión del usuario.
+La aplicación incorpora autenticación real contra el Mock API (login con usuario/contraseña, token Basic Auth persistido en LocalStorage), manejo de estado con React Hooks, comunicación HTTP mediante una instancia centralizada de Axios (con interceptores de autenticación y manejo de errores) y almacenamiento local para mantener la sesión y las preferencias visuales del usuario.
 
 ---
 
@@ -25,7 +25,7 @@ La aplicación incorpora autenticación simulada, manejo de estado con React Hoo
 - Vite
 - JavaScript (ES6+)
 - Axios
-- JSON Server
+- Node.js (http nativo, sin frameworks) para el Mock API
 - CSS3
 - HTML5
 
@@ -91,9 +91,9 @@ INACAP-ES3/
 
 ## Autenticación
 
-- Inicio de sesión simulado.
-- Validación local de credenciales.
-- Persistencia de sesión mediante LocalStorage.
+- Inicio de sesión real contra el Mock API (`POST /api/login`).
+- Token Basic Auth persistido en LocalStorage y adjuntado automáticamente a cada petición mediante un interceptor de Axios.
+- Validación de la sesión contra `GET /api/perfil` al recargar la página.
 - Cierre de sesión.
 
 ---
@@ -103,7 +103,7 @@ INACAP-ES3/
 - Crear tareas.
 - Listar tareas.
 - Editar tareas.
-- Eliminar tareas.
+- Eliminar tareas (con confirmación previa).
 - Actualización automática de la interfaz sin recargar la página.
 
 ---
@@ -124,6 +124,7 @@ Permite filtrar tareas por:
 
 - Título.
 - Descripción.
+- Responsable.
 
 La búsqueda se realiza en tiempo real.
 
@@ -138,24 +139,39 @@ La búsqueda se realiza en tiempo real.
 
 ---
 
+## Manejo de errores y evidencia
+
+- Interceptor centralizado de Axios que captura errores 400, 401, 404 y 500, los registra en la consola del navegador y los traduce a un mensaje visual mediante `<ErrorAlert />`.
+- Un token inválido o expirado (401) limpia automáticamente la sesión guardada.
+- Ver `evidencia_pruebas/README.md` para las instrucciones exactas de cómo reproducir y capturar cada uno de los 3 casos exigidos por la pauta (401 / 404 / 500).
+
+---
+
 # API utilizada
 
-El proyecto utiliza JSON Server como API REST simulada.
+El proyecto consume un Mock API propio (`mock-server/mock_api_server.js`), construido con el módulo nativo `http` de Node.js (sin frameworks externos).
 
 Base URL
 
 ```
-http://localhost:3000
+http://localhost:4000/api
 ```
+
+Todas las rutas, salvo `/login`, requieren la cabecera `Authorization: Basic YWRtaW46YWRtaW4xMjM=` (obtenida al iniciar sesión).
 
 Endpoints utilizados
 
-| Método | Endpoint | Descripción |
-|---------|----------|-------------|
-| GET | /tasks | Obtener todas las tareas |
-| POST | /tasks | Crear una tarea |
-| PUT | /tasks/:id | Actualizar una tarea |
-| DELETE | /tasks/:id | Eliminar una tarea |
+| Método | Endpoint | Descripción | Requiere Auth |
+|---------|----------|-------------|---------------|
+| POST | /login | Autenticación, retorna token Basic Auth y perfil | No |
+| GET | /perfil | Datos del usuario autenticado | Sí |
+| GET | /usuarios | Lista de responsables disponibles | Sí |
+| GET | /tareas | Obtener todas las tareas | Sí |
+| POST | /tareas | Crear una tarea | Sí |
+| PUT | /tareas/:id | Actualizar una tarea | Sí |
+| DELETE | /tareas/:id | Eliminar una tarea | Sí |
+
+La API también simula errores 500 agregando `?error=500` (o la cabecera `x-simulate-error: 500`) a cualquier petición, usado para la evidencia de manejo de errores (ver `evidencia_pruebas/`).
 
 ---
 
@@ -195,10 +211,10 @@ El proyecto requiere dos terminales.
 
 ## Terminal 1
 
-Iniciar el Mock Server.
+Iniciar el Mock API.
 
 ```bash
-cd front_end/mock-server
+cd mock-server
 
 npm start
 ```
@@ -206,7 +222,7 @@ npm start
 Servidor:
 
 ```
-http://localhost:3000
+http://localhost:4000
 ```
 
 ---
@@ -231,21 +247,19 @@ http://localhost:5173
 
 # Credenciales de acceso
 
-La autenticación es simulada.
+La autenticación es real contra el Mock API (`POST /api/login`), validada en el backend.
 
-Correo
+Usuario
 
-```
-admin@inacap.cl
+admin
 ```
 
 Contraseña
 
-```
-123456
+admin123
 ```
 
-La sesión permanece almacenada en LocalStorage hasta cerrar sesión.
+El token Basic Auth y los datos de perfil quedan almacenados en LocalStorage hasta cerrar sesión. La app valida ese token contra `GET /api/perfil` al recargar la página.
 
 ---
 
@@ -335,13 +349,13 @@ Incluye:
 
 La aplicación utiliza dos mecanismos:
 
-## JSON Server
+## Mock API (mock-server)
 
-Almacena las tareas.
+Almacena las tareas en memoria (`InMemoryDb.js`) durante la ejecución del servidor, expuestas mediante `/api/tareas`.
 
 ## LocalStorage
 
-Mantiene la sesión del usuario autenticado.
+Mantiene la sesión del usuario autenticado (token Basic Auth + perfil) y las preferencias visuales (tema claro/oscuro), validando el JSON antes de confiar en él para evitar datos corruptos o manipulados.
 
 ---
 
@@ -400,3 +414,27 @@ La aplicación debe cumplir los siguientes requisitos:
 ## Uso de la IA
 
 La inteligencia artificial fue utilizada únicamente como apoyo para acelerar el desarrollo del proyecto. El código generado fue revisado, probado, corregido y adaptado manualmente para cumplir con los requisitos solicitados en la evaluación.
+
+---
+
+## Segundo prompt — Auditoría y corrección contra la pauta ES3
+
+Tras integrar el Mock API real (`mock-server/mock_api_server.js`, con Basic Auth y el recurso `/api/tareas`), el front-end seguía apuntando a la versión de práctica inicial (login simulado por correo, JSON Server en `/tasks`, tareas con un campo `estado` libre). Se usó IA generativa con el siguiente prompt para auditar el proyecto completo contra la rúbrica oficial y corregir únicamente lo necesario:
+
+```
+Actúa como un desarrollador Senior especializado en React, Vite, Axios y JSON Server.
+NO quiero que rehagas el proyecto. NO quiero una nueva arquitectura. NO quiero un
+nuevo diseño. Quiero que trabajes SOBRE MI PROYECTO ACTUAL.
+Tu trabajo es únicamente AUDITAR y CORREGIR: compara el proyecto punto por punto
+con la pauta ES3 y realiza únicamente las modificaciones necesarias para cumplir
+el 100% de los requisitos, manteniendo estructura, nombres de archivo y lógica
+existente siempre que sea posible.
+```
+
+### Justificación técnica crítica de lo implementado
+
+- **Instancia de Axios con interceptores en lugar de headers manuales por llamada**: se centralizó la inyección del token Basic Auth y el manejo de errores HTTP en `axiosInstance.js` (interceptores de request/response) en vez de repetirlo en cada servicio. Esto evita duplicar lógica de autenticación en `taskService.js`/`authService.js` y asegura que cualquier error 400/401/404/500 se registre en consola y se traduzca a un mensaje consistente sin tocar cada componente.
+- **Validación de la sesión leída desde LocalStorage**: se agregó una función `isValidSession()` que verifica la forma del objeto antes de confiar en él, en vez de asumir que cualquier JSON parseable es válido. Un `localStorage` es editable manualmente desde la consola del navegador; sin esta validación, un valor manipulado podría enviarse como header `Authorization` sin control.
+- **Cambio del modelo de tarea (`estado` → `prioridad` + `responsable` + `completada`)**: se adoptó porque el Mock API real (`InMemoryDb.js`) ya define ese esquema; mantener el campo `estado` habría generado un CRUD que compila pero nunca persiste datos reales contra el backend de la evaluación.
+- **Preferencia de tema persistida (`getPreferences`/`savePreferences`/`clearPreferences`)**: se implementó como la funcionalidad más simple que cumple el requisito explícito de la Opción B de la pauta ("Almacena en LocalStorage preferencias de configuración visual") sin introducir una reestructuración de la UI existente.
+- **Riesgo no adoptado**: se evaluó reescribir el diseño de las tarjetas para un tablero Kanban (Pendiente/En Proceso/Completada) como en el wireframe oficial, pero se descartó por instrucción explícita de no rediseñar la interfaz existente; en su lugar se mantiene el listado con badges de estado y prioridad, que cubre el mismo requisito funcional (CRUD reactivo) sin alterar el layout aprobado.

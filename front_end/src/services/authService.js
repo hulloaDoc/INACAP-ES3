@@ -1,34 +1,29 @@
+import axiosInstance from '../api/axiosInstance';
 import { saveSession, clearSession } from '../utils/localStorage';
 
-// No existe backend de autenticación: se valida contra un usuario falso.
-const FAKE_USER = {
-  email: 'admin@inacap.cl',
-  password: '123456',
+/**
+ * Inicia sesión contra el Mock API real (POST /api/login) y persiste
+ * el token Basic Auth junto con los datos de perfil en LocalStorage.
+ * @param {string} username
+ * @param {string} password
+ * @returns {Promise<object>} datos del usuario autenticado
+ */
+export const login = async (username, password) => {
+  const response = await axiosInstance.post('/login', { username, password });
+  const { token, user } = response.data;
+
+  saveSession({ token, user });
+  return user;
 };
 
 /**
- * Intenta iniciar sesión con las credenciales del usuario falso.
- * @param {string} email
- * @param {string} password
- * @returns {Promise<{email: string, loginAt: string}>}
+ * Consulta el perfil del usuario autenticado (GET /api/perfil).
+ * Requiere que exista una sesión con token válido.
+ * @returns {Promise<object>}
  */
-export const login = (email, password) => {
-  return new Promise((resolve, reject) => {
-    const isValid = email === FAKE_USER.email && password === FAKE_USER.password;
-
-    if (!isValid) {
-      reject(new Error('Correo o contraseña incorrectos.'));
-      return;
-    }
-
-    const session = {
-      email,
-      loginAt: new Date().toISOString(),
-    };
-
-    saveSession(session);
-    resolve(session);
-  });
+export const getPerfil = async () => {
+  const response = await axiosInstance.get('/perfil');
+  return response.data;
 };
 
 /**
