@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
+import ErrorAlert from './ErrorAlert';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -19,20 +20,29 @@ function Login({ onLogin }) {
     try {
       setCargando(true);
 
-      const respuesta = await axiosInstance.post('/api/login', {
+      const respuestaLogin = await axiosInstance.post('/api/login', {
         username: username.trim(),
         password,
       });
 
-      localStorage.setItem('token', respuesta.data.token);
+      localStorage.setItem('token', respuestaLogin.data.token);
+
+      const respuestaPerfil = await axiosInstance.get('/api/perfil');
+
       localStorage.setItem(
         'perfil',
-        JSON.stringify(respuesta.data.user)
+        JSON.stringify(respuestaPerfil.data)
       );
 
-      onLogin(respuesta.data.user);
+      onLogin(respuestaPerfil.data);
     } catch (errorPeticion) {
-      console.error('Error de autenticación:', errorPeticion);
+      console.error(
+      `Error HTTP ${errorPeticion.response?.status || 'sin respuesta'}:`,
+      errorPeticion.response?.data?.mensaje || errorPeticion.message
+    );
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('perfil');
 
       const mensaje =
         errorPeticion.response?.data?.mensaje ||
@@ -45,39 +55,67 @@ function Login({ onLogin }) {
   };
 
   return (
-    <main>
-      <form onSubmit={iniciarSesion}>
-        <h1>Gestor de Inventario</h1>
-        <p>Inicia sesión para administrar los productos.</p>
+    <main className="login-page">
+      <section className="login-card">
+        <div className="login-brand">
+          <div className="brand-icon">S</div>
 
-        <label htmlFor="username">Usuario</label>
-        <input
-          id="username"
-          type="text"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-        />
+          <div>
+            <span className="brand-name">StockFlow</span>
+            <span className="brand-description">
+              Control inteligente de inventario
+            </span>
+          </div>
+        </div>
 
-        <br />
+        <div className="login-heading">
+          <span className="login-label">ACCESO AL SISTEMA</span>
+          <h1>Bienvenido nuevamente</h1>
+          <p>Ingresa tus credenciales para administrar la tienda.</p>
+        </div>
 
-        <label htmlFor="password">Contraseña</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
+        <form className="login-form" onSubmit={iniciarSesion}>
+          <div className="form-group">
+            <label htmlFor="username">Usuario</label>
 
-        {error && (
-          <p role="alert" style={{ color: 'red' }}>
-            {error}
-          </p>
-        )}
+            <input
+              id="username"
+              type="text"
+              placeholder="Ingresa tu usuario"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              autoComplete="username"
+            />
+          </div>
 
-        <button type="submit" disabled={cargando}>
-          {cargando ? 'Ingresando...' : 'Iniciar sesión'}
-        </button>
-      </form>
+          <div className="form-group">
+            <label htmlFor="password">Contraseña</label>
+
+            <input
+              id="password"
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+            />
+          </div>
+
+          <ErrorAlert mensaje={error} />
+
+          <button
+            className="primary-button"
+            type="submit"
+            disabled={cargando}
+          >
+            {cargando ? 'Verificando credenciales...' : 'Iniciar sesión'}
+          </button>
+        </form>
+
+        <p className="login-footer">
+          Sistema de administración de inventario
+        </p>
+      </section>
     </main>
   );
 }

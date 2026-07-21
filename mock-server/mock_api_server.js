@@ -1,9 +1,3 @@
-/**
-  * mock_api_server.js
-  * Punto de entrada principal para el servidor Mock API.
-  * Inicializa el Router, registra controladores y levanta el servidor HTTP nativo.
-  * Diseñado bajo principios SOLID y patrones de diseño limpio para fines académicos.
-  */
 
 const http = require('http');
 const url = require('url');
