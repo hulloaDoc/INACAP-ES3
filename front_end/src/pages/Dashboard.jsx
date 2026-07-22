@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { addSearchToHistory } from '../utils/localStorage';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import ErrorAlert from '../components/ErrorAlert';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -11,14 +12,38 @@ import EventForm from '../components/EventForm';
 import SearchHistory from '../components/SearchHistory';
 
 export default function Dashboard() {
+  const { logout } = useAuth();
   const [eventos, setEventos] = useState([]);
   const [salas, setSalas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [salaFiltro, setSalaFiltro] = useState('todas');
   const [busqueda, setBusqueda] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [eventoEditando, setEventoEditando] = useState(null);
+  const [searchTrigger, setSearchTrigger] = useState(0);
+
+  const handleError = useCallback((err) => {
+    if (!err.response) {
+      setError('Error de conexion con el servidor. Verifica que este activo.');
+      return;
+    }
+    const status = err.response.status;
+    const mensaje = err.response.data?.mensaje || 'Error desconocido';
+    if (status === 401) {
+      setError('Sesion expirada o credenciales invalidas. Por favor, inicia sesion nuevamente.');
+      setTimeout(() => logout(), 3000);
+    } else if (status === 404) {
+      setError(`Recurso no encontrado: ${mensaje}`);
+    } else if (status === 500) {
+      setError('Error interno del servidor. Intenta mas tarde.');
+    } else if (status === 400) {
+      setError(`Solicitud invalida: ${mensaje}`);
+    } else {
+      setError(mensaje);
+    }
+  }, [logout]);
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
@@ -31,7 +56,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [handleError]);
 
   const fetchSalas = useCallback(async () => {
     try {
@@ -40,33 +65,18 @@ export default function Dashboard() {
     } catch (err) {
       handleError(err);
     }
-  }, []);
+  }, [handleError]);
 
   useEffect(() => {
     fetchEventos();
     fetchSalas();
   }, [fetchEventos, fetchSalas]);
 
-  function handleError(err) {
-    const status = err.response?.status;
-    const mensaje = err.response?.data?.mensaje || 'Error desconocido';
-    if (status === 401) {
-      setError('Sesion expirada o credenciales invalidas. Por favor, inicia sesion nuevamente.');
-    } else if (status === 404) {
-      setError(`Recurso no encontrado: ${mensaje}`);
-    } else if (status === 500) {
-      setError('Error interno del servidor. Intenta mas tarde.');
-    } else if (status === 400) {
-      setError(`Solicitud invalida: ${mensaje}`);
-    } else {
-      setError(mensaje);
-    }
-  }
-
   function handleSearch(query) {
     setBusqueda(query);
     if (query.trim()) {
       addSearchToHistory(query);
+      setSearchTrigger((prev) => prev + 1);
     }
   }
 
@@ -76,17 +86,21 @@ export default function Dashboard() {
 
   async function handleCreate(formData) {
     setError(null);
+    setSubmitting(true);
     try {
       await axiosInstance.post('/api/eventos', formData);
       setShowForm(false);
       fetchEventos();
     } catch (err) {
       handleError(err);
+    } finally {
+      setSubmitting(false);
     }
   }
 
   async function handleUpdate(formData) {
     setError(null);
+    setSubmitting(true);
     try {
       await axiosInstance.put(`/api/eventos/${eventoEditando.id}`, formData);
       setEventoEditando(null);
@@ -94,6 +108,8 @@ export default function Dashboard() {
       fetchEventos();
     } catch (err) {
       handleError(err);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -172,7 +188,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        <SearchHistory onRepeat={handleRepeatSearch} />
+        <SearchHistory onRepeat={handleRepeatSearch} searchTrigger={searchTrigger} />
 
         {showForm && (
           <EventForm
@@ -180,6 +196,7 @@ export default function Dashboard() {
             eventoActual={eventoEditando}
             onSubmit={handleFormSubmit}
             onCancel={handleCloseForm}
+            submitting={submitting}
           />
         )}
       </main>

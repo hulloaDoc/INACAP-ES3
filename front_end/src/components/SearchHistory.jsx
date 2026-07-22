@@ -1,8 +1,12 @@
 import { getSearchHistory, clearSearchHistory } from '../utils/localStorage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function SearchHistory({ onRepeat }) {
+export default function SearchHistory({ onRepeat, searchTrigger }) {
   const [history, setHistory] = useState(getSearchHistory());
+
+  useEffect(() => {
+    setHistory(getSearchHistory());
+  }, [searchTrigger]);
 
   function handleClear() {
     clearSearchHistory();
