@@ -9,6 +9,7 @@ function parseJsonBody(req) {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
+        console.log('[BODY DEBUG] Raw body:', body);
         if (!body) {
           resolve({});
         } else {

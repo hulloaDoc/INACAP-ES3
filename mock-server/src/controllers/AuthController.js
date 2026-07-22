@@ -10,6 +10,9 @@ class AuthController {
   async login(req, res) {
     try {
       const data = await parseJsonBody(req);
+      console.log('[LOGIN DEBUG] Body recibido:', JSON.stringify(data));
+      console.log('[LOGIN DEBUG] db.login:', JSON.stringify(db.login));
+      console.log('[LOGIN DEBUG] user match:', data.username === db.login.username, '| pass match:', data.password === db.login.password);
       if (data.username === db.login.username && data.password === db.login.password) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
