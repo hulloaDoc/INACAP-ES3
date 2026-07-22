@@ -56,6 +56,21 @@ router.add('DELETE', '/api/eventos/:id', (req, res, params) => eventController.d
 const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
 
+  // Ruta de diagnóstico: bypass middleware (temporal)
+  if (parsedUrl.pathname === '/api/test-auth') {
+    const db = require('./src/database/InMemoryDb');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      dbLogin: db.login,
+      testMatch: db.login.username === 'admin' && db.login.password === 'admin123',
+      usernameType: typeof db.login.username,
+      passwordType: typeof db.login.password,
+      charCodes_user: [...db.login.username].map(c => c.charCodeAt(0)),
+      charCodes_pass: [...db.login.password].map(c => c.charCodeAt(0))
+    }));
+    return;
+  }
+
   // Ejecución en cadena de middlewares
   if (!middleware.applyCors(req, res)) return;
   if (!middleware.simulateError(req, res, parsedUrl)) return;
@@ -71,9 +86,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 // 3. Encendido del Servidor
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
   console.log(`🚀 Servidor Mock API ES3 iniciado en puerto ${PORT}`);
   console.log(`   Acceso Local: http://localhost:${PORT}`);
+  console.log(`   Escuchando en: 0.0.0.0 (todas las interfaces)`);
   console.log(`====================================================`);
 });
