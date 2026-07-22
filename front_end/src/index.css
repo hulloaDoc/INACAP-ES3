@@ -288,6 +288,16 @@ body {
   margin-top: 0.5rem;
 }
 
+.form-error {
+  background: var(--danger-light);
+  border: 1px solid var(--danger);
+  color: var(--danger-dark);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
 /* ===== ERROR ALERT ===== */
 .error-alert {
   background: var(--danger-light);
