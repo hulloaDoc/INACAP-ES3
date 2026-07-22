@@ -1,0 +1,43 @@
+/* Reseteo básico para que coincida con un estilo de aplicación administrativa */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 20px;
+}
+
+/* Evitar que React centre todo en la pantalla como lo hacía la plantilla de Vite */
+#root {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* Estilos básicos para inputs y botones */
+input, select, button {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* Estilo para que la tabla se vea estructurada como el wireframe */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #e9ecef;
+}
