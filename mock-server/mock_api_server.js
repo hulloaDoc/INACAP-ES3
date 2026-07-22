@@ -38,20 +38,6 @@ router.add('POST', '/api/productos', (req, res) => productController.create(req,
 router.add('PUT', '/api/productos/:id', (req, res, params) => productController.update(req, res, params));
 router.add('DELETE', '/api/productos/:id', (req, res, params) => productController.delete(req, res, params));
 
-// Rutas CRUD Opción B: Task Tracker (Tareas)
-router.add('GET', '/api/tareas', (req, res) => taskController.getAll(req, res));
-router.add('GET', '/api/tareas/:id', (req, res, params) => taskController.getById(req, res, params));
-router.add('POST', '/api/tareas', (req, res) => taskController.create(req, res));
-router.add('PUT', '/api/tareas/:id', (req, res, params) => taskController.update(req, res, params));
-router.add('DELETE', '/api/tareas/:id', (req, res, params) => taskController.delete(req, res, params));
-
-// Rutas CRUD Opción C: Agenda de Eventos (Eventos)
-router.add('GET', '/api/eventos', (req, res) => eventController.getAll(req, res));
-router.add('GET', '/api/eventos/:id', (req, res, params) => eventController.getById(req, res, params));
-router.add('POST', '/api/eventos', (req, res) => eventController.create(req, res));
-router.add('PUT', '/api/eventos/:id', (req, res, params) => eventController.update(req, res, params));
-router.add('DELETE', '/api/eventos/:id', (req, res, params) => eventController.delete(req, res, params));
-
 // 2. Creación del Servidor HTTP y orquestación del flujo de Middlewares
 const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
