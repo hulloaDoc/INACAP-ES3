@@ -155,3 +155,230 @@ El servidor mock de la API no cuenta con dependencias npm externas para facilita
 node mock_api_server.js
 ```
 El servidor comenzará a escuchar peticiones en la dirección `http://localhost:4000`.
+## Proyecto desarrollado
+
+### Gestor de Inventario de Tienda
+
+Aplicación web SPA desarrollada con React y Vite para administrar el inventario de una tienda.
+
+La aplicación permite iniciar sesión, consultar productos, filtrar el inventario, registrar nuevos productos, editar información existente, eliminar registros y conservar una bitácora de auditoría en LocalStorage.
+
+### Estudiante
+
+- **Nombre:** Matías Espíndola
+- **Asignatura:** Programación Front-End
+- **Evaluación:** Evaluación Sumativa 3
+- **Unidad:** Framework en JavaScript: ReactJS
+
+---
+
+## Tecnologías utilizadas
+
+- React
+- Vite
+- JavaScript
+- Axios
+- CSS
+- LocalStorage
+- Node.js
+- Git y GitHub
+
+---
+
+## Funcionalidades implementadas
+
+- Inicio de sesión con usuario y contraseña.
+- Autenticación mediante token Basic Auth.
+- Persistencia de sesión en LocalStorage.
+- Consulta del perfil del usuario autenticado.
+- Header con nombre, rol, correo y avatar.
+- Listado dinámico de productos.
+- Consulta de categorías.
+- Filtro por categoría.
+- Filtro por disponibilidad de stock.
+- Registro de productos mediante POST.
+- Edición de productos mediante PUT.
+- Eliminación de productos mediante DELETE.
+- Validación de nombre, precio, stock y categoría.
+- Bitácora de auditoría persistente en LocalStorage.
+- Limpieza del historial de auditoría.
+- Manejo centralizado de errores HTTP 400, 401, 404 y 500.
+- Alertas visuales sin congelar la aplicación.
+- Evidencias de errores de consola e interfaz.
+
+---
+
+## Credenciales de prueba
+
+```text
+Usuario: admin
+Contraseña: admin123
+```
+
+---
+
+## Ejecución del proyecto
+
+### 1. Ejecutar el servidor simulado
+
+Desde la raíz del repositorio:
+
+```bash
+cd mock-server
+node mock_api_server.js
+```
+
+El servidor se ejecuta en:
+
+```text
+http://localhost:4000
+```
+
+### 2. Ejecutar React
+
+En una segunda terminal:
+
+```bash
+cd front_end
+npm install
+npm run dev
+```
+
+La aplicación se ejecuta en:
+
+```text
+http://localhost:5173
+```
+
+React y el servidor simulado deben mantenerse ejecutándose simultáneamente.
+
+---
+
+## Estructura principal
+
+```text
+INACAP-ES3
+├── evidencia_pruebas
+│   ├── README.md
+│   ├── error_401_consola.png
+│   ├── error_401_interfaz.png
+│   ├── error_404_consola.png
+│   ├── error_404_interfaz.png
+│   ├── error_500_consola.png
+│   └── error_500_interfaz.png
+├── front_end
+│   └── src
+│       ├── api
+│       ├── components
+│       ├── services
+│       ├── utils
+│       ├── App.jsx
+│       └── App.css
+└── mock-server
+```
+
+---
+
+## Seguridad e integridad
+
+La aplicación implementa las siguientes medidas:
+
+- Lectura segura de LocalStorage mediante `try/catch`.
+- Validación de la estructura de la sesión y de la bitácora.
+- Eliminación de valores dañados almacenados localmente.
+- Validación de entradas antes de enviarlas a la API.
+- Renderizado de textos mediante JSX.
+- No se utiliza `innerHTML`.
+- No se utiliza `dangerouslySetInnerHTML`.
+- El token se incorpora automáticamente mediante un interceptor de Axios.
+- Los errores HTTP son capturados sin detener la aplicación.
+
+---
+
+## Evidencia de errores
+
+Las capturas y la explicación técnica se encuentran en:
+
+```text
+evidencia_pruebas/README.md
+```
+
+Se documentaron los siguientes casos:
+
+- Error 401 por credenciales incorrectas.
+- Error 404 al consultar un producto inexistente.
+- Error 500 mediante una simulación del servidor.
+- Error 400 por campos obligatorios faltantes.
+
+---
+
+## Uso de Inteligencia Artificial — ES3
+
+Durante el desarrollo se utilizó ChatGPT como herramienta de apoyo para comprender React, modularizar componentes, configurar Axios, validar entradas y organizar el flujo Git.
+
+### Prompt 1 — Configuración de Axios
+
+> Necesito crear una instancia centralizada de Axios en `src/api/axiosInstance.js` para una aplicación React con Vite. Debe utilizar `axios.create()`, conectarse a `http://localhost:4000/api`, agregar dinámicamente el token Basic Auth guardado en LocalStorage y manejar de forma centralizada los errores HTTP 400, 401, 404 y 500.
+
+#### Análisis crítico
+
+Se aceptó la recomendación de utilizar una instancia centralizada porque evita repetir la URL, los encabezados y la lógica de autenticación en cada solicitud. También permite que todos los errores sean tratados de manera uniforme mediante interceptores.
+
+La solución fue revisada para que la petición de login no incluyera un token anterior y para que las demás solicitudes protegidas recibieran el encabezado `Authorization`.
+
+---
+
+### Prompt 2 — Modularización de React
+
+> Necesito modularizar un gestor de inventario desarrollado en React. Debe utilizar componentes reutilizables para el login, alertas, formulario de productos, tabla, filtros, bitácora y pruebas de errores. La lógica de conexión con la API debe estar separada en servicios y debe utilizar `useState`, `useEffect`, `useMemo` y componentes funcionales.
+
+#### Análisis crítico
+
+Se aceptó la separación en componentes porque facilita la lectura, reutilización y mantenimiento del proyecto.
+
+La lógica del CRUD se separó en `productService.js`, mientras que la visualización se distribuyó en componentes como `ProductForm`, `ProductTable`, `AuditLog` y `ErrorAlert`.
+
+También se revisó que cada Hook tuviera una función concreta y que no existieran estados o imports sin utilizar. Esto se comprobó mediante `npm run lint`.
+
+---
+
+### Prompt 3 — Validación segura de entradas
+
+> Necesito validar de forma segura un formulario de productos con los campos nombre, precio, stock y categoría. Los mensajes deben aparecer en español, el precio debe ser mayor que cero, el stock debe ser un número entero igual o mayor que cero y no se debe utilizar `innerHTML` ni `dangerouslySetInnerHTML`.
+
+#### Análisis crítico
+
+La validación automática del navegador mostraba algunos mensajes en inglés. Por ese motivo se utilizó `noValidate` en el formulario y se implementaron validaciones personalizadas en React.
+
+Esta decisión permite mostrar mensajes claros en español y mantener un comportamiento uniforme entre navegadores.
+
+Los textos se renderizan mediante JSX, por lo que no se insertan directamente como HTML. Esto reduce riesgos de inyección XSS.
+
+---
+
+### Prompt 4 — Bitácora en LocalStorage
+
+> Necesito implementar una bitácora de auditoría en LocalStorage que registre el usuario, la acción realizada, el ID, el nombre del producto y la fecha. Debe validar el JSON almacenado, persistir después de actualizar la página y permitir limpiar el historial.
+
+#### Análisis crítico
+
+Se aceptó LocalStorage porque era un requerimiento específico de la opción de inventario.
+
+La solución fue limitada a 50 registros para evitar un crecimiento indefinido. Además, se validó la estructura de cada entrada y se implementó un bloque `try/catch` para impedir que un JSON dañado bloquee la aplicación.
+
+---
+
+## Conclusión sobre el uso de IA
+
+Las sugerencias de inteligencia artificial no fueron aplicadas de forma automática. Cada bloque fue probado en el servidor simulado, revisado mediante el navegador y validado con ESLint.
+
+También se realizaron modificaciones propias, como:
+
+- Personalizar los mensajes en español.
+- Corregir imports sin uso.
+- Separar la lógica de servicios y componentes.
+- Validar la estructura de LocalStorage.
+- Confirmar cada operación CRUD.
+- Crear evidencias reales de errores 401, 404 y 500.
+
+La IA se utilizó como apoyo para comprender y organizar la solución, mientras que las decisiones finales se comprobaron directamente en el proyecto.
