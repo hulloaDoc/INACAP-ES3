@@ -1,16 +1,84 @@
-# React + Vite
+# Evaluación Sumativa 3 - Programación Front-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descripción
 
-Currently, two official plugins are available:
+El proyecto corresponde a un sistema de inventario desarrollado en React para la asignatura de Programación Front-End de INACAP.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+El sistema permite:
 
-## React Compiler
+- Iniciar sesión.
+- Visualizar productos.
+- Agregar productos.
+- Editar productos.
+- Eliminar productos.
+- Registrar acciones en LocalStorage.
+- Consumir una API REST mediante Axios.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Tecnologías utilizadas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- Vite
+- React Router DOM
+- Axios
+- JavaScript
+- HTML
+- CSS
+
+---
+
+## Instalación
+
+1. Clonar el repositorio.
+
+2. Instalar las dependencias:
+
+```bash
+npm install
+```
+
+3. Ejecutar el proyecto:
+
+```bash
+npm run dev
+```
+
+4. Ejecutar el servidor simulado:
+
+```bash
+node mock_api_server.js
+```
+
+---
+
+## Funcionalidades
+
+- Inicio de sesión.
+- Gestión de inventario.
+- Crear productos.
+- Editar productos.
+- Eliminar productos.
+- Bitácora almacenada en LocalStorage.
+- Manejo de errores mediante Axios.
+
+---
+
+## Uso de Inteligencia Artificial
+
+Se utilizó ChatGPT Y Claude como herramientas de apoyo para:
+
+- Resolver errores del proyecto
+- Explicar conceptos de React
+- Mejorar la estructura del código
+- Apoyar la depuración y pruebas
+
+---
+
+## Autor
+
+Estrella Marina Bernal Estrada
+
+Ingeniería en Informática
+
+INACAP
